@@ -1,87 +1,72 @@
-// Import the functions you need from the SDKs you need
+// ====================
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+// ====================
 const firebaseConfig = {
   apiKey: "AIzaSyD3I5n7DTJgLG8dmuBwahc_TdwPb8FzcMk",
   authDomain: "saezuri-218c7.firebaseapp.com",
   projectId: "saezuri-218c7",
+  storageBucket: "saezuri-218c7.firebasestorage.app",
+  messagingSenderId: "161963958344",
+  appId: "1:161963958344:web:7a3b043941ac227608f87d"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const text = document.getElementById("text");
-const count = document.getElementById("count");
-const postBtn = document.getElementById("postBtn");
+// ====================
+// 投稿処理
+// ====================
+const btn = document.getElementById("post-btn");
+const input = document.getElementById("post-input");
 const timeline = document.getElementById("timeline");
 
-// 文字数カウント
-text.addEventListener("input", () => {
-  count.textContent = `${text.value.length} / 140`;
-});
+btn.onclick = async () => {
+  const text = input.value.trim();
+  if (!text) return;
 
-// 投稿
-postBtn.onclick = () => {
-  if (!text.value.trim()) return;
+  const now = new Date().toISOString();
 
-  db.collection("posts").add({
-    text: text.value,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  await db.collection("posts").add({
+    text,
+    timestamp: now,
     likes: 0
   });
 
-  text.value = "";
-  count.textContent = "0 / 140";
+  input.value = "";
 };
 
-// 日付フォーマット
-function formatDate(ts) {
-  const d = ts.toDate();
-  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
-}
-
-// タイムライン
-let lastDate = "";
-
+// ====================
+// 投稿を表示
+// ====================
 db.collection("posts")
-  .orderBy("createdAt", "desc")
-  .onSnapshot(snapshot => {
-    timeline.innerHTML = "";
-    lastDate = "";
+  .orderBy("timestamp", "desc")
+  .onSnapshot((snapshot) => {
+    timeline.innerHTML = ""; 
+    snapshot.forEach((doc) => {
+      const p = doc.data();
+      const card = document.createElement("div");
+      card.className = "post-card";
 
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (!data.createdAt) return;
+      const txt = document.createElement("p");
+      txt.textContent = p.text;
 
-      const dateStr = data.createdAt.toDate().toDateString();
-      if (dateStr !== lastDate) {
-        const d = document.createElement("div");
-        d.textContent = dateStr;
-        d.style.textAlign = "center";
-        d.style.color = "gray";
-        timeline.appendChild(d);
-        lastDate = dateStr;
-      }
+      const time = document.createElement("small");
+      time.textContent = new Date(p.timestamp).toLocaleString();
 
-      const div = document.createElement("div");
-      div.className = "post";
-      div.innerHTML = `
-        <div>${data.text}</div>
-        <div class="time">${formatDate(data.createdAt)}</div>
-        <div class="like">♡ ${data.likes}</div>
-      `;
+      const likeBtn = document.createElement("span");
+      likeBtn.className = "like-btn";
+      likeBtn.textContent = ` ❤️ ${p.likes}`;
 
-      div.querySelector(".like").onclick = () => {
-        db.collection("posts").doc(doc.id)
-          .update({ likes: firebase.firestore.FieldValue.increment(1) });
+      likeBtn.onclick = async () => {
+        await db.collection("posts").doc(doc.id).update({
+          likes: p.likes + 1
+        });
       };
 
-      timeline.appendChild(div);
+      card.append(txt, time, likeBtn);
+      timeline.append(card);
     });
   });
+
