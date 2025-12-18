@@ -66,7 +66,7 @@ db.collection("posts")
 
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
-      likeBtn.textContent = ` ❤️ ${p.likes}`;
+      likeBtn.textContent = ` 🩷 ${p.likes}`;
       likeBtn.onclick = () => {
         db.collection("posts").doc(doc.id).update({
           likes: p.likes + 1
