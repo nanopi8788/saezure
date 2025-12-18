@@ -22,18 +22,34 @@ btn.addEventListener("click", async () => {
   const text = input.value.trim();
   if (!text) return;
 
-  await db.collection("posts").add({
+  // 即時表示用に仮カード作成
+  const tempCard = document.createElement("div");
+  tempCard.className = "post-card";
+  const tempText = document.createElement("p");
+  tempText.textContent = text;
+  const tempTime = document.createElement("small");
+  tempTime.textContent = "送信中...";
+  tempCard.append(tempText, tempTime);
+  timeline.prepend(tempCard);
+
+  input.value = "";
+
+  // Firestore に保存
+  const docRef = await db.collection("posts").add({
     text: text,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     likes: 0
   });
 
-  input.value = "";
+  // 保存後に Firestore データで上書き
+  const docSnap = await docRef.get();
+  const p = docSnap.data();
+  tempTime.textContent = new Date(p.createdAt.toDate()).toLocaleString();
 });
 
-// 表示
+// タイムライン更新
 db.collection("posts")
-  .orderBy("createdAt", "desc")  // ←ここを修正
+  .orderBy("createdAt", "desc")
   .onSnapshot((snapshot) => {
     timeline.innerHTML = "";
 
@@ -46,7 +62,7 @@ db.collection("posts")
       txt.textContent = p.text;
 
       const time = document.createElement("small");
-      time.textContent = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleString() : "";
+      time.textContent = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleString() : "送信中...";
 
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
@@ -54,4 +70,10 @@ db.collection("posts")
       likeBtn.onclick = () => {
         db.collection("posts").doc(doc.id).update({
           likes: p.likes + 1
-        })
+        });
+      };
+
+      card.append(txt, time, likeBtn);
+      timeline.append(card);
+    });
+  });
