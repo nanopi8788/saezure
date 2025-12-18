@@ -6,16 +6,16 @@ body {
 
 @media (max-width: 480px) {
   header {
-position: fixed;
-  top: 0;   
-  left: 0;        
-  width: 100vw;      
-  background: #FEACD8;
-  color: white;
-  text-align: center;
-  padding: 15px 0;
-  z-index: 1000;      
-  box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: #FEACD8;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    z-index: 1000;
+    box-sizing: border-box;
   }
 }
 
@@ -30,7 +30,8 @@ main {
   width: 100%;
   height: 80px;
   font-size: 16px;
-  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 button {
@@ -47,7 +48,8 @@ button {
   border: none;
   padding: 0;
   background: none;
-  margin: 0;
+  text-align: right;
+  margin: 20px;
 }
 
 .image-button img {
@@ -56,45 +58,50 @@ button {
   object-fit: contain;
 }
 
-.line-below-btn {
-  height: 1px;           
-  background-color: #C8D4DB;
-  margin-top: 0px;       
-  max-width: 480px;
-  position: relative;
-  margin-left: auto;
-  margin-right: auto;
-  display: inline-block;      /* 横幅が必要 */
-  position: relative;
-  margin: 0 auto;
-}
-
+/* ===== タイムライン用ライン ===== */
 .line-wrapper {
-  position: relative;
-  text-align: center; 
-  margin: 20px 0;
+  position: relative;      /* 文字・短い線・下線の基準 */
+  text-align: center;
+  margin: 20px auto;
+  height: 20px;            /* 線と文字が収まる高さ */
+  max-width: 480px;
 }
 
-.timeline-text {
-  text-align: center;
-  bottom: 100%;      /* 線の上に表示 */
+/* 下線（メイン） */
+.line-below-btn {
+  position: absolute;      /* 親のline-wrapper基準 */
+  bottom: 0;               /* 下端に固定 */
   left: 50%;
   transform: translateX(-50%);
-  background: #f5f8fa;  /* 背景を線と同じ色にして被らないように */
-  padding: 0 5px;       /* 文字の周りに余白 */
-  font-weight: bold;
-
-.line-below-btn::before {
-  content: "";                /* 疑似要素必須 */
-  position: absolute;
-  top: 0px;                  /* 下線に密着させる */
-  left: 50%;                 /* 左から少し内側 */
-  transform: translateX(-50%);
-  width: 100px;                /* 線の長さ */
-  height: 10px;                /* 線の太さ */
-  background-color: #FF1D8D;
+  width: 100%;             /* 親幅いっぱいに伸ばす */
+  height: 1px;
+  background-color: #C8D4DB;
 }
 
+/* 下線中央に短い線 */
+.line-below-btn::before {
+  content: "";
+  position: absolute;
+  top: -3px;               /* 下線に密着 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;             /* 短い線の長さ */
+  height: 1px;
+  background-color: #C8D4DB;
+}
+
+/* タイムライン文字 */
+.timeline-text {
+  position: absolute;
+  bottom: 100%;            /* 下線の上に表示 */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f5f8fa;     /* 下線と被らないように */
+  padding: 0 5px;
+  font-weight: bold;
+}
+
+/* 投稿カード */
 .post-card {
   background: white;
   border-radius: 12px;
