@@ -1,6 +1,5 @@
-// ====================
-import { initializeApp } from "firebase/app";
-// ====================
+console.log("script.js 読み込まれた");
+
 const firebaseConfig = {
   apiKey: "AIzaSyD3I5n7DTJgLG8dmuBwahc_TdwPb8FzcMk",
   authDomain: "saezuri-218c7.firebaseapp.com",
