@@ -8,49 +8,50 @@ const firebaseConfig = {
   appId: "1:161963958344:web:7a3b043941ac227608f87d"
 };
 
+// 初期化
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// DOM取得
+const btn = document.getElementById("post-btn");
+const input = document.getElementById("post-input");
+const timeline = document.getElementById("timeline");
+
 // 投稿
-document.getElementById("post-btn").onclick = async () => {
-  const input = document.getElementById("post-input");
+btn.addEventListener("click", async () => {
   const text = input.value.trim();
   if (!text) return;
 
   await db.collection("posts").add({
-    text,
-    time: firebase.firestore.FieldValue.serverTimestamp(),
+    text: text,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     likes: 0
   });
 
   input.value = "";
-};
+});
 
 // 表示
 db.collection("posts")
-  .orderBy("time", "desc")
+  .orderBy("createdAt", "desc")
   .onSnapshot(snapshot => {
-    const timeline = document.getElementById("timeline");
     timeline.innerHTML = "";
-
     snapshot.forEach(doc => {
-      const d = doc.data();
+      const data = doc.data();
 
       const card = document.createElement("div");
-      card.className = "post";
+      card.className = "post-card";
 
       const p = document.createElement("p");
-      p.textContent = d.text;
+      p.textContent = data.text;
 
-      const like = document.createElement("button");
-      like.textContent = `♡ ${d.likes || 0}`;
-      like.onclick = () => {
-        db.collection("posts").doc(doc.id).update({
-          likes: (d.likes || 0) + 1
-        });
-      };
+      const time = document.createElement("small");
+      if (data.createdAt) {
+        time.textContent = data.createdAt.toDate().toLocaleString();
+      }
 
-      card.append(p, like);
-      timeline.append(card);
+      card.appendChild(p);
+      card.appendChild(time);
+      timeline.appendChild(card);
     });
   });
