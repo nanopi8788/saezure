@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>さえずれ</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>saezure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>さえずれ</header>
+<div class="container">
+  <h1>さえずれ</h1>
 
-  <main>
-    <section id="post-box">
-      <textarea id="post-input" maxlength="140" placeholder="いま何してる？（140字まで）"></textarea>
-      <div class="post-footer">
-        <span id="char-count">0 / 140</span>
-        <button id="post-btn">投稿</button>
-      </div>
-    </section>
+  <div class="post-box">
+    <textarea id="text" maxlength="140" placeholder="いま考えてること（140字まで）"></textarea>
+    <div class="post-footer">
+      <span id="count">0 / 140</span>
+      <button id="postBtn">投稿</button>
+    </div>
+  </div>
 
-    <section id="timeline"></section>
-  </main>
+  <div id="timeline"></div>
+</div>
 
-  <!-- Firebase + JS -->
-  <script type="module" src="script.js"></script>
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script src="script.js"></script>
 </body>
 </html>
