@@ -46,8 +46,7 @@ button {
   border: none;
   padding: 0;
   background: none;
-  text-align: right;
-  margin: 20px;
+  right: 0; 
 }
 
 .image-button img {
