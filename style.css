@@ -4,22 +4,27 @@ body {
   background: #f5f8fa;
 }
 
-header {
-  width: 100%;
-  max-width: 600px;
-  background: #1da1f2;
+/* スマホ向け全般（max-width: 600px） */
+@media (max-width: 600px) {
+  header {
+position: fixed;
+  top: 0;   
+  left: 0;        
+  width: 100vw;      
+  background: ##FEACD8;
   color: white;
   text-align: center;
   padding: 15px 0;
+  z-index: 1000;      
   box-sizing: border-box;
-  margin: 0 auto;
+  }
 }
-
 
 main {
   max-width: 480px;
   margin: 0 auto;
   padding: 10px;
+  padding-top: 60px;
 }
 
 #post-input {
@@ -50,6 +55,9 @@ button {
   object-fit: contain;
 }
 
+.image-button {
+  border-bottom: 1px solid gray
+}
 
 .post-card {
   background: white;
