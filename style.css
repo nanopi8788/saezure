@@ -63,6 +63,13 @@ button {
   max-width: 480px;    
 }
 
+H4 {
+  position: fixed;
+  top: 0;   
+  left: 0;        
+  text-align: center;
+}
+
 .line-below-btn::before {
   content: "";                /* 疑似要素必須 */
   position: absolute;
