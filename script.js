@@ -1,4 +1,5 @@
 // Firebase設定
+const ADMIN_KEY = "saezure_nanopi"; 
 const firebaseConfig = {
   apiKey: "AIzaSyD3I5n7DTJgLG8dmuBwahc_TdwPb8FzcMk",
   authDomain: "saezuri-218c7.firebaseapp.com",
@@ -32,26 +33,45 @@ btn.addEventListener("click", async () => {
 });
 
 // 表示
-db.collection("posts")
-  .orderBy("createdAt", "desc")
-  .onSnapshot(snapshot => {
-    timeline.innerHTML = "";
-    snapshot.forEach(doc => {
-      const data = doc.data();
+const adminKey = prompt("管理者キーを入力（一般閲覧なら空欄でOK）");
 
+db.collection("posts")
+  .orderBy("timestamp", "desc")
+  .onSnapshot((snapshot) => {
+    timeline.innerHTML = "";
+
+    snapshot.forEach((doc) => {
+      const p = doc.data();
       const card = document.createElement("div");
       card.className = "post-card";
 
-      const p = document.createElement("p");
-      p.textContent = data.text;
+      const txt = document.createElement("p");
+      txt.textContent = p.text;
 
       const time = document.createElement("small");
-      if (data.createdAt) {
-        time.textContent = data.createdAt.toDate().toLocaleString();
+      time.textContent = new Date(p.timestamp).toLocaleString();
+
+      const likeBtn = document.createElement("span");
+      likeBtn.className = "like-btn";
+      likeBtn.textContent = ` ❤️ ${p.likes}`;
+      likeBtn.onclick = () => {
+        db.collection("posts").doc(doc.id).update({
+          likes: p.likes + 1
+        });
+      };
+
+      card.append(txt, time, likeBtn);
+
+      // 🔥 管理者だけ削除できる
+      if (adminKey === ADMIN_KEY) {
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "削除";
+        delBtn.onclick = () => {
+          db.collection("posts").doc(doc.id).delete();
+        };
+        card.append(delBtn);
       }
 
-      card.appendChild(p);
-      card.appendChild(time);
-      timeline.appendChild(card);
+      timeline.append(card);
     });
   });
