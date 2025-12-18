@@ -2,29 +2,28 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>saezure</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>匿名タイムライン</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-  <h1>さえずれ</h1>
+<header>
+  <h1>匿名タイムライン</h1>
+</header>
 
-  <div class="post-box">
-    <textarea id="text" maxlength="140" placeholder="いま考えてること（140字まで）"></textarea>
-    <div class="post-footer">
-      <span id="count">0 / 140</span>
-      <button id="postBtn">投稿</button>
-    </div>
-  </div>
+<main>
+  <section id="post-section">
+    <textarea id="post-input" placeholder="140字以内の投稿…" maxlength="140"></textarea>
+    <button id="post-btn">投稿する</button>
+  </section>
 
-  <div id="timeline"></div>
-</div>
+  <section id="timeline"></section>
+</main>
 
-<!-- Firebase CDN -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Firebase SDK（必ずここに入れる） -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script src="script.js"></script>
 </body>
