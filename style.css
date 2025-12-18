@@ -63,6 +63,16 @@ button {
   max-width: 480px;    
 }
 
+.line-below-btn::before {
+  content: "";                /* 疑似要素必須 */
+  position: absolute;
+  top: -2px;                  /* 下線に密着させる */
+  left: 10px;                 /* 左から少し内側 */
+  width: 100px;                /* 線の長さ */
+  height: 10px;                /* 線の太さ */
+  background-color: #FF1D8D;
+}
+
 .post-card {
   background: white;
   border-radius: 12px;
