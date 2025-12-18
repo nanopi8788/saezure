@@ -61,19 +61,22 @@ button {
   background-color: #C8D4DB;
   margin-top: 0px;       
   max-width: 480px;
-  position: relative;
+  /*position: relative;
   margin-left: auto;
-  margin-right: auto;
+  margin-right: auto;*/
+  display: inline-block;      /* 横幅が必要 */
+  position: relative;
+  margin: 0 auto;
 }
 
 .line-wrapper {
   position: relative;
-  text-align: center; /* 文字を中央寄せ */
+  text-align: center; 
   margin: 20px 0;
 }
 
 .timeline-text {
-  position: absolute;
+  text-align: center;
   bottom: 100%;      /* 線の上に表示 */
   left: 50%;
   transform: translateX(-50%);
