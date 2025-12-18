@@ -2,26 +2,22 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>さえずれ</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <h1>さえずれ</h1>
-</header>
+<header>さえずれ</header>
 
 <main>
-  <section id="post-section">
-    <textarea id="post-input" placeholder="140字以内の投稿…" maxlength="140"></textarea>
-    <button id="post-btn">投稿する</button>
-  </section>
+  <textarea id="post-input" maxlength="140" placeholder="いま何してる？"></textarea>
+  <button id="post-btn">投稿</button>
 
-  <section id="timeline"></section>
+  <div id="timeline"></div>
 </main>
 
-<!-- Firebase SDK（必ずここに入れる） -->
+<!-- Firebase compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
