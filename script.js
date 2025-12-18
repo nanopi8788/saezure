@@ -1,5 +1,4 @@
 // Firebase設定
-const ADMIN_KEY = "saezure_nanopi"; 
 const firebaseConfig = {
   apiKey: "AIzaSyD3I5n7DTJgLG8dmuBwahc_TdwPb8FzcMk",
   authDomain: "saezuri-218c7.firebaseapp.com",
@@ -32,8 +31,9 @@ btn.addEventListener("click", async () => {
   input.value = "";
 });
 
+// 表示
 db.collection("posts")
-  .orderBy("timestamp", "desc")
+  .orderBy("createdAt", "desc")  // ←ここを修正
   .onSnapshot((snapshot) => {
     timeline.innerHTML = "";
 
@@ -46,7 +46,7 @@ db.collection("posts")
       txt.textContent = p.text;
 
       const time = document.createElement("small");
-      time.textContent = new Date(p.timestamp).toLocaleString();
+      time.textContent = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleString() : "";
 
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
@@ -54,11 +54,4 @@ db.collection("posts")
       likeBtn.onclick = () => {
         db.collection("posts").doc(doc.id).update({
           likes: p.likes + 1
-        });
-      };
-
-      card.append(txt, time, likeBtn);
-      
-      timeline.append(card);
-    });
-  });
+        })
