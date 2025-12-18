@@ -5,13 +5,16 @@ body {
 }
 
 header {
-  background: ##FEACD8;
+  width: 100%;
+  max-width: 600px;
+  background: #1da1f2;
   color: white;
   text-align: center;
-  padding: 12px;
-   max-width: 480px;
+  padding: 15px 0;
+  box-sizing: border-box;
   margin: 0 auto;
 }
+
 
 main {
   max-width: 480px;
