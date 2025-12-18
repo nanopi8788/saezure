@@ -35,7 +35,7 @@ main {
 button {
   width: 100%;
   padding: 12px;
-  margin-top: 8px;
+  margin-top: 0px;
   font-size: 16px;
 }
 
@@ -57,7 +57,7 @@ button {
 .line-below-btn {
   height: 1px;           
   background-color: #C8D4DB;
-  margin-top: 8px;       
+  margin-top: 0px;       
   width: 100%;     
 }
 
