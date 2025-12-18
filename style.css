@@ -60,7 +60,7 @@ button {
   height: 1px;           
   background-color: #C8D4DB;
   margin-top: 0px;       
-  width: 100%;     
+  max-width: 480px;    
 }
 
 .post-card {
