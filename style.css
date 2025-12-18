@@ -4,8 +4,7 @@ body {
   background: #f5f8fa;
 }
 
-/* スマホ向け全般（max-width: 600px） */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   header {
 position: fixed;
   top: 0;   
@@ -55,8 +54,11 @@ button {
   object-fit: contain;
 }
 
-.image-button {
-  border-bottom: 1px solid gray
+.line-below-btn {
+  height: 1px;           
+  background-color: #C8D4DB;
+  margin-top: 8px;       
+  width: 100%;     
 }
 
 .post-card {
