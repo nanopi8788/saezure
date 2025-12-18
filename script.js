@@ -1,4 +1,4 @@
-// Firebase読み込み
+// Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore,
@@ -7,10 +7,12 @@ import {
   query,
   orderBy,
   onSnapshot,
+  updateDoc,
+  doc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Firebase設定
+// 🔥 ここに「Firebase設定をそのまま全部貼る」
 const firebaseConfig = {
   apiKey: "AIzaSyD3I5n7DTJgLG8dmuBwahc_TdwPb8FzcMk",
   authDomain: "saezuri-218c7.firebaseapp.com",
@@ -24,51 +26,60 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// HTML要素
+// DOM
 const input = document.getElementById("post-input");
-const button = document.getElementById("post-btn");
+const btn = document.getElementById("post-btn");
 const timeline = document.getElementById("timeline");
+const count = document.getElementById("char-count");
 
-// 投稿処理（140字制限）
-button.addEventListener("click", async () => {
+// 文字数カウント
+input.addEventListener("input", () => {
+  count.textContent = `${input.value.length} / 140`;
+});
+
+// 投稿
+btn.onclick = async () => {
   const text = input.value.trim();
-  if (!text || text.length > 140) return;
+  if (!text) return;
 
   await addDoc(collection(db, "posts"), {
-    text: text,
-    createdAt: serverTimestamp(),
-    likes: 0
+    text,
+    likes: 0,
+    createdAt: serverTimestamp()
   });
 
   input.value = "";
-});
+  count.textContent = "0 / 140";
+};
 
-// リアルタイムで投稿を取得
-const q = query(
-  collection(db, "posts"),
-  orderBy("createdAt", "desc")
-);
+// タイムライン表示
+const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
 onSnapshot(q, (snapshot) => {
   timeline.innerHTML = "";
-  snapshot.forEach((doc) => {
-    const data = doc.data();
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
 
-    const card = document.createElement("div");
-    card.className = "post-card";
+    const div = document.createElement("div");
+    div.className = "post";
 
-    const textEl = document.createElement("p");
-    textEl.textContent = data.text;
+    const time = data.createdAt
+      ? new Date(data.createdAt.seconds * 1000).toLocaleString()
+      : "";
 
-    const timeEl = document.createElement("small");
-    if (data.createdAt) {
-      timeEl.textContent =
-        new Date(data.createdAt.seconds * 1000).toLocaleString();
-    }
+    div.innerHTML = `
+      <div>${data.text}</div>
+      <div class="time">${time}</div>
+      <div class="like">❤️ ${data.likes}</div>
+    `;
 
-    card.appendChild(textEl);
-    card.appendChild(timeEl);
-    timeline.appendChild(card);
+    // いいね（回数制限なし）
+    div.querySelector(".like").onclick = async () => {
+      await updateDoc(doc(db, "posts", docSnap.id), {
+        likes: data.likes + 1
+      });
+    };
+
+    timeline.appendChild(div);
   });
 });
-
