@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>さえずれ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="container">
-  <textarea id="text" maxlength="140" placeholder="いまなに考えてる？（140字まで）"></textarea>
-  <button id="post">投稿</button>
+  <header>さえずれ</header>
 
-  <div id="timeline"></div>
-</div>
+  <main>
+    <section id="post-box">
+      <textarea id="post-input" maxlength="140" placeholder="いま何してる？（140字まで）"></textarea>
+      <div class="post-footer">
+        <span id="char-count">0 / 140</span>
+        <button id="post-btn">投稿</button>
+      </div>
+    </section>
 
-<script src="script.js"></script>
+    <section id="timeline"></section>
+  </main>
+
+  <!-- Firebase + JS -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
