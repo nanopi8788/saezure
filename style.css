@@ -85,9 +85,9 @@ button {
   top: -3px;               /* 下線に密着 */
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;             /* 短い線の長さ */
-  height: 1px;
-  background-color: #C8D4DB;
+  width: 100px;             /* 短い線の長さ */
+  height: 10px;
+  background-color: #FF1D8D;
 }
 
 /* タイムライン文字 */
