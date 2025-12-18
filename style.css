@@ -9,6 +9,8 @@ header {
   color: white;
   text-align: center;
   padding: 12px;
+   max-width: 480px;
+  margin: 0 auto;
 }
 
 main {
@@ -40,8 +42,8 @@ button {
 }
 
 .image-button img {
-  width: 40%;
-  height: 40%;
+  width: 60%;
+  height: 60%;
   object-fit: contain;
 }
 
