@@ -2,29 +2,27 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>さえずれ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-    }
-    .post {
-      background: white;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>さえずれ</h1>
+  <div class="container">
 
-  <div class="post">誰かの匿名さえずり</div>
-  <div class="post">別のさえずり</div>
+    <header>
+      <h1>さえずれ</h1>
+    </header>
 
+    <section class="post-form">
+      <textarea id="postInput" placeholder="いま考えていること"></textarea>
+      <button id="postButton">投稿</button>
+    </section>
+
+    <section id="timeline"></section>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
