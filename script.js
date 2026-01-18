@@ -48,30 +48,7 @@ btn.addEventListener("click", async () => {
 });
 
 // タイムライン更新
-db.collection("posts")
-  .orderBy("createdAt", "desc")
-  .onSnapshot((snapshot) => {
-    timeline.innerHTML = "";
 
-    snapshot.forEach((doc) => {
-      const p = doc.data();
-      const card = document.createElement("div");
-      card.className = "post-card";
-
-      const txt = document.createElement("p");
-      txt.textContent = p.text;
-
-      const time = document.createElement("small");
-      time.textContent = p.createdAt ? new Date(p.createdAt.toDate()).toLocaleString() : "送信中...";
-
-      const likeBtn = document.createElement("span");
-      likeBtn.className = "like-btn";
-      likeBtn.textContent = ` 🩷 ${p.likes}`;
-      likeBtn.onclick = () => {
-        db.collection("posts").doc(doc.id).update({
-          likes: p.likes + 1
-        });
-      };
 
       card.append(txt, time, likeBtn);
       timeline.append(card);
