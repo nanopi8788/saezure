@@ -15,9 +15,6 @@ header {
   padding: 15px 0;
   z-index: 1000;
   box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .header-title {
@@ -30,7 +27,11 @@ header {
 }
 
 .header-icon {
-  height: 35px; 
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 35px;
   width: auto;
 }
 
