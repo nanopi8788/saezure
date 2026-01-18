@@ -21,6 +21,10 @@ header {
 }
 
 .header-title {
+   position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   font-size: 18px; 
   font-weight: bold;
 }
