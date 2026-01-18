@@ -28,7 +28,7 @@ header {
 
 .header-icon {
   position: absolute;
-  right: 140px;
+  right: 120px;
   top: 50%;
   transform: translateY(-50%);
   height: 35px;
