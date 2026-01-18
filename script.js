@@ -79,3 +79,45 @@ db.collection("posts")
   });
       let currentSort = "new";
       let unsubscribe = null;
+
+function loadTimeline(sortType) {
+  if (unsubscribe) unsubscribe(); // 以前の監視を解除
+
+  let query = db.collection("posts");
+
+  if (sortType === "like") {
+    query = query.orderBy("likes", "desc");
+  } else {
+    query = query.orderBy("createdAt", "desc");
+  }
+
+  unsubscribe = query.onSnapshot((snapshot) => {
+    timeline.innerHTML = "";
+
+    snapshot.forEach((doc) => {
+      const p = doc.data();
+      const card = document.createElement("div");
+      card.className = "post-card";
+
+      const txt = document.createElement("p");
+      txt.textContent = p.text;
+
+      const time = document.createElement("small");
+      time.textContent = p.createdAt
+        ? new Date(p.createdAt.toDate()).toLocaleString()
+        : "";
+
+      const likeBtn = document.createElement("span");
+      likeBtn.textContent = ` ❤️ ${p.likes}`;
+      likeBtn.onclick = () => {
+        db.collection("posts").doc(doc.id).update({
+          likes: p.likes + 1
+        });
+      };
+
+      card.append(txt, time, likeBtn);
+      timeline.append(card);
+    });
+  });
+}
+
