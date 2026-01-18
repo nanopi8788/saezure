@@ -15,6 +15,20 @@ header {
   padding: 15px 0;
   z-index: 1000;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-title {
+  font-size: 18px; 
+  font-weight: bold;
+}
+
+.header-icon {
+  height: 18px; 
+  width: auto;
 }
 
 main {
