@@ -12,7 +12,7 @@ header {
   background: #FEACD8;
   color: white;
   text-align: center;
-  padding: 15px 0;
+  padding: 25px 0;
   z-index: 1000;
   box-sizing: border-box;
 }
@@ -28,7 +28,7 @@ header {
 
 .header-icon {
   position: absolute;
-  right: -50px;
+  right: 215px;
   top: 50%;
   transform: translateY(-50%);
   height: 35px;
@@ -39,7 +39,7 @@ main {
   max-width: 480px;
   margin: 0 auto;
   padding: 10px;
-  padding-top: 60px;
+  padding-top: 80px;
 }
 
 /* ===== 投稿フォーム wrapper ===== */
