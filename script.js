@@ -121,3 +121,11 @@ function loadTimeline(sortType) {
   });
 }
 
+document.querySelectorAll(".sort-buttons button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentSort = btn.dataset.sort;
+    loadTimeline(currentSort);
+  });
+});
+
+loadTimeline("new");
