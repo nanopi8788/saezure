@@ -18,7 +18,6 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
 }
 
 .header-title {
@@ -27,7 +26,7 @@ header {
 }
 
 .header-icon {
-  height: 18px; 
+  height: 35px; 
   width: auto;
 }
 
