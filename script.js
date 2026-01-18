@@ -27,7 +27,7 @@ btn.addEventListener("click", async () => {
   input.value = "";
 
   await db.collection("posts").add({
-    text,
+    text: text,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     likes: 0
   });
@@ -63,4 +63,26 @@ function loadTimeline(sortType) {
         : "";
 
       const likeBtn = document.createElement("span");
-      likeBtn.textContent = `
+      likeBtn.className = "like-btn";
+      likeBtn.textContent = ` 🩷 ${p.likes}`;
+      likeBtn.onclick = () => {
+        db.collection("posts").doc(doc.id).update({
+          likes: p.likes + 1
+        });
+      };
+
+      card.append(txt, time, likeBtn);
+      timeline.append(card);
+    });
+  });
+}
+
+// ソートボタン
+document.querySelectorAll(".sort-buttons button").forEach(b => {
+  b.addEventListener("click", () => {
+    loadTimeline(b.dataset.sort);
+  });
+});
+
+// 初期表示
+loadTimeline("new");
