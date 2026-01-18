@@ -77,3 +77,5 @@ db.collection("posts")
       timeline.append(card);
     });
   });
+      let currentSort = "new";
+      let unsubscribe = null;
