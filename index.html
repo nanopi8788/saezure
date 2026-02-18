@@ -13,26 +13,18 @@
   <img src="https://raw.githubusercontent.com/nanopi8788/saezure/main/%E3%81%8B%E3%82%8F%E3%81%84%E3%81%84%E3%81%AA%E3%81%AE%E3%81%B4.png" class="header-icon">
 </header>
 
-<!-- 画像選択 -->
 <input type="file" id="image-input" accept="image/*">
 
 <main>
-
   <div class="post-wrapper">
     <textarea id="post-input" maxlength="140" placeholder="さて、さえずるか"></textarea>
-    
-   <div class="post-btn-wrapper">
-  <!-- 左：画像選択ボタン -->
-  <button id="image-select-btn" class="image-button">
-    <img src="https://raw.githubusercontent.com/nanopi8788/saezure/main/%E3%81%8C%E3%81%9E%E3%81%86.png" alt="画像選択">
-  </button>
-
-  <!-- 右：投稿ボタン -->
-  <button id="post-btn" class="image-button">
-    <img src="https://raw.githubusercontent.com/nanopi8788/saezure/main/%E3%81%95%E3%81%88%E3%81%9A%E3%82%8B.png" alt="さえずる">
-  </button>
-</div>
-
+    <div class="post-btn-wrapper">
+      <button id="image-select-btn" class="image-button">
+        <img src="https://raw.githubusercontent.com/nanopi8788/saezure/main/%E3%81%8C%E3%81%9E%E3%81%86.png" alt="画像選択">
+      </button>
+      <button id="post-btn" class="image-button">
+        <img src="https://raw.githubusercontent.com/nanopi8788/saezure/main/%E3%81%95%E3%81%88%E3%81%9A%E3%82%8B.png" alt="さえずる">
+      </button>
     </div>
   </div>
 
@@ -47,12 +39,10 @@
   </div>
 
   <div id="timeline"></div>
-
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
 <script src="script.js"></script>
 
 </body>
