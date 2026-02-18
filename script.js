@@ -22,9 +22,7 @@ imageBtn.addEventListener("click", () => imageInput.click());
 
 let unsubscribe = null;
 
-/* =========================
-   2.5:1トリミング＋SVGマスク（確率付き）
-========================= */
+// 2.5:1トリミング＋SVGマスク
 function cropToWide(imageFile) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -39,62 +37,52 @@ function cropToWide(imageFile) {
         let sx, sy, sw, sh;
 
         if (imgRatio > targetRatio) {
-          // 横長
           sh = img.height;
           sw = sh * targetRatio;
           sx = (img.width - sw) / 2;
           sy = 0;
         } else {
-          // 縦長
           sw = img.width;
           sh = sw / targetRatio;
           sx = 0;
           sy = (img.height - sh) / 2;
         }
 
-        // デフォルトの細長い canvas
-        let canvas = document.createElement("canvas");
+        const canvas = document.createElement("canvas");
         canvas.width = 1000;
         canvas.height = 400;
         const ctx = canvas.getContext("2d");
 
-        // 90%の確率でマスクをかける
-        if (Math.random() < 0.9) {
+        if (Math.random() < 0.9) { // マスクあり
           const maskImg = new Image();
           maskImg.crossOrigin = "anonymous";
           maskImg.src = "https://nanopi8788.github.io/saezure/weird.svg";
           maskImg.onload = () => {
-            // マスクに合わせた canvas に切り替える
-            canvas = document.createElement("canvas");
-            canvas.width = maskImg.width;
-            canvas.height = maskImg.height;
-            const ctx = canvas.getContext("2d");
+            const maskCanvas = document.createElement("canvas");
+            maskCanvas.width = canvas.width;
+            maskCanvas.height = canvas.height;
+            const maskCtx = maskCanvas.getContext("2d");
+            maskCtx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
 
-            // 画像を canvas に描画
+            ctx.save();
             ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-
-            // マスク適用
             ctx.globalCompositeOperation = "destination-in";
-            ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(maskCanvas, 0, 0);
+            ctx.restore();
 
             resolve(canvas.toDataURL("image/png"));
           };
-        } else {
-          // マスクなし（通常投稿）
+        } else { // 通常投稿
           ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
           resolve(canvas.toDataURL("image/png"));
         }
       };
     };
-
     reader.readAsDataURL(imageFile);
   });
 }
 
-
-/* =========================
-   投稿処理
-========================= */
+// 投稿処理
 btn.addEventListener("click", async () => {
   const text = input.value.trim();
   const file = imageInput.files[0];
@@ -114,9 +102,7 @@ btn.addEventListener("click", async () => {
   imageInput.value = "";
 });
 
-/* =========================
-   タイムライン
-========================= */
+// タイムライン
 function loadTimeline(sortType) {
   if (unsubscribe) unsubscribe();
 
@@ -132,12 +118,10 @@ function loadTimeline(sortType) {
       const card = document.createElement("div");
       card.className = "post-card";
 
-      // テキスト
       const txt = document.createElement("p");
       txt.textContent = p.text || "";
       card.appendChild(txt);
 
-      // 画像
       if (p.image) {
         const img = document.createElement("img");
         img.src = p.image;
@@ -145,18 +129,14 @@ function loadTimeline(sortType) {
         card.appendChild(img);
       }
 
-      // 時刻
       const time = document.createElement("small");
       if (p.createdAt && p.createdAt.toDate) time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
       card.appendChild(time);
 
-      // いいね
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
       likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
-      likeBtn.onclick = () => {
-        db.collection("posts").doc(doc.id).update({ likes: (p.likes || 0) + 1 });
-      };
+      likeBtn.onclick = () => db.collection("posts").doc(doc.id).update({ likes: (p.likes || 0) + 1 });
       card.appendChild(likeBtn);
 
       timeline.appendChild(card);
@@ -164,12 +144,10 @@ function loadTimeline(sortType) {
   });
 }
 
-/* =========================
-   ソートボタン
-========================= */
+// ソートボタン
 document.querySelectorAll(".sort-buttons button").forEach(b => {
   b.addEventListener("click", () => loadTimeline(b.dataset.sort));
 });
 
-/* 初期表示 */
+// 初期表示
 loadTimeline("new");
