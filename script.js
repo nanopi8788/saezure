@@ -34,17 +34,22 @@ function cropToWide(imageFile) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
-        // 90%の確率でマスクをかける
-        const applyMask = Math.random() < 0.9;
+        // 乱数でマスク種類を決定
+        const r = Math.random();
+        let maskSrc = null;
 
-        if (applyMask) {
-          // マスクあり → SVGに合わせる（元画像比率維持）
+        if (r < 0.05) maskSrc = "https://nanopi8788.github.io/saezure/weird.svg"; // 5%
+        else if (r < 0.9) maskSrc = "https://nanopi8788.github.io/saezure/hato.svg"; // 30%
+        // else 0.65 → マスクなし
+
+        if (maskSrc) {
+          // マスクあり → 元画像比率維持で切り抜く
           canvas.width = img.width;
           canvas.height = img.height;
 
           const maskImg = new Image();
           maskImg.crossOrigin = "anonymous";
-          maskImg.src = "https://nanopi8788.github.io/saezure/weird.svg";
+          maskImg.src = maskSrc;
 
           maskImg.onload = () => {
             const maskCanvas = document.createElement("canvas");
@@ -62,7 +67,7 @@ function cropToWide(imageFile) {
             resolve(canvas.toDataURL("image/png"));
           };
         } else {
-          // マスクなし → 元の2.5:1トリミング
+          // マスクなし → 2.5:1横長トリミング
           const targetRatio = 2.5;
           const imgRatio = img.width / img.height;
 
@@ -91,6 +96,7 @@ function cropToWide(imageFile) {
     reader.readAsDataURL(imageFile);
   });
 }
+
 // 投稿処理
 btn.addEventListener("click", async () => {
   const text = input.value.trim();
