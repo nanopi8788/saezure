@@ -76,12 +76,13 @@ btn.addEventListener("click", async () => {
   input.value = "";
   imageInput.value = "";
 
-  await db.collection("posts").add({
-    text: text,
-    image: imageUrl,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    likes: 0
-  });
+    await db.collection("posts").add({
+  text: text,
+  image: imageUrl,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp() || new Date(),
+  likes: 0
+    
+    });
 });
 
 // タイムライン読み込み
@@ -106,12 +107,30 @@ function loadTimeline(sortType) {
       card.className = "post-card";
 
       const txt = document.createElement("p");
-      let img = null;
-      
+      txt.textContent = p.text || "";
+      card.appendChild(txt);
+
+      // 画像表示
       if (p.image) {
-        img = document.createElement("img");
+        const img = document.createElement("img");
         img.src = p.image;
         img.className = "post-image";
+
+        if (Math.random() < 0.30) {
+          img.classList.add("weird-shape");
+        }
+
+        card.appendChild(img);
+      }
+
+      // 時間（null対策）
+      const time = document.createElement("small");
+      if (p.createdAt && p.createdAt.toDate) {
+        time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
+      } else {
+        time.textContent = "";
+      }
+      card.appendChild(time);
 
   // %で変形
   if (Math.random() < 0.30) {
