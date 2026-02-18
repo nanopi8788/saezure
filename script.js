@@ -8,7 +8,6 @@ const firebaseConfig = {
   appId: "1:161963958344:web:7a3b043941ac227608f87d"
 };
 
-// 初期化
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -20,6 +19,9 @@ const timeline = document.getElementById("timeline");
 
 let unsubscribe = null;
 
+/* =========================
+   1000×400トリミング
+========================= */
 function cropToWide(imageFile) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -61,31 +63,34 @@ function cropToWide(imageFile) {
   });
 }
 
-
-// 投稿
+/* =========================
+   投稿処理
+========================= */
 btn.addEventListener("click", async () => {
   const text = input.value.trim();
-  if (!text && !imageInput.files[0]) return;
+  const file = imageInput.files[0];
+
+  if (!text && !file) return;
 
   let imageUrl = null;
-
-  if (imageInput.files[0]) {
-    imageUrl = await cropToWide(imageInput.files[0]);
+  if (file) {
+    imageUrl = await cropToWide(file);
   }
+
+  await db.collection("posts").add({
+    text: text,
+    image: imageUrl,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    likes: 0
+  });
 
   input.value = "";
   imageInput.value = "";
-
-    await db.collection("posts").add({
-  text: text,
-  image: imageUrl,
-  createdAt: firebase.firestore.FieldValue.serverTimestamp() || new Date(),
-  likes: 0
-    
-    });
 });
 
-// タイムライン読み込み
+/* =========================
+   タイムライン
+========================= */
 function loadTimeline(sortType) {
   if (unsubscribe) unsubscribe();
 
@@ -106,11 +111,12 @@ function loadTimeline(sortType) {
       const card = document.createElement("div");
       card.className = "post-card";
 
+      // テキスト
       const txt = document.createElement("p");
       txt.textContent = p.text || "";
       card.appendChild(txt);
 
-      // 画像表示
+      // 画像
       if (p.image) {
         const img = document.createElement("img");
         img.src = p.image;
@@ -123,7 +129,7 @@ function loadTimeline(sortType) {
         card.appendChild(img);
       }
 
-      // 時間（null対策）
+      // 時刻
       const time = document.createElement("small");
       if (p.createdAt && p.createdAt.toDate) {
         time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
@@ -132,45 +138,30 @@ function loadTimeline(sortType) {
       }
       card.appendChild(time);
 
-  // %で変形
-  if (Math.random() < 0.30) {
-    img.classList.add("weird-shape");
-  }
-}
-
-      txt.textContent = p.text;
-
-      const time = document.createElement("small");
-      time.textContent = p.createdAt
-        ? new Date(p.createdAt.toDate()).toLocaleString()
-        : "";
-
+      // いいね
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
-      likeBtn.textContent = ` 🩷 ${p.likes}`;
+      likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
       likeBtn.onclick = () => {
         db.collection("posts").doc(doc.id).update({
-          likes: p.likes + 1
+          likes: (p.likes || 0) + 1
         });
       };
+      card.appendChild(likeBtn);
 
-      if (img) {
-  card.append(txt, img, time, likeBtn);
-} else {
-  card.append(txt, time, likeBtn);
-}
-
-      timeline.append(card);
+      timeline.appendChild(card);
     });
   });
 }
 
-// ソートボタン
+/* =========================
+   ソートボタン
+========================= */
 document.querySelectorAll(".sort-buttons button").forEach(b => {
   b.addEventListener("click", () => {
     loadTimeline(b.dataset.sort);
   });
 });
 
-// 初期表示
+/* 初期表示 */
 loadTimeline("new");
