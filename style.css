@@ -147,3 +147,17 @@ main {
   mask-size: cover;
   mask-repeat: no-repeat;
 }
+
+.image-select-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #FF1D8D;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 8px;
+}
