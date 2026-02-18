@@ -23,7 +23,7 @@ imageBtn.addEventListener("click", () => imageInput.click());
 let unsubscribe = null;
 
 /* =========================
-   2.5:1トリミング＋SVGマスク
+   2.5:1トリミング（Canvasのみ）
 ========================= */
 function cropToWide(imageFile) {
   return new Promise((resolve) => {
@@ -33,7 +33,7 @@ function cropToWide(imageFile) {
       img.src = reader.result;
 
       img.onload = () => {
-        const targetRatio = 2.5;
+        const targetRatio = 2.5; // 1000 / 400
         const imgRatio = img.width / img.height;
 
         let sx, sy, sw, sh;
@@ -54,24 +54,7 @@ function cropToWide(imageFile) {
         canvas.width = 1000;
         canvas.height = 400;
         const ctx = canvas.getContext("2d");
-
-        // 30%の確率でSVGマスクを適用
-        if (Math.random() < 0.9) {
-          ctx.save();
-          const path = new Path2D();
-          // SVGパスをPath2Dに変換
-          path.moveTo(1000.46,401);
-          path.bezierCurveTo(666.94,401,333.97,401,1.01,401);
-          path.bezierCurveTo(1.01,267.63,1.01,134.31,1.01,1.00);
-          path.bezierCurveTo(334.35,1.00,667.67,1.00,1001,1.00);
-          path.bezierCurveTo(1001,134.34,1001,267.67,1000.46,401);
-          path.closePath();
-          ctx.clip(path);
-        }
-
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1000, 400);
-
-        if (Math.random() < 0.3) ctx.restore();
 
         resolve(canvas.toDataURL("image/jpeg", 0.9));
       };
@@ -101,10 +84,11 @@ btn.addEventListener("click", async () => {
 
   input.value = "";
   imageInput.value = "";
+  loadTimeline("new"); // 投稿後すぐ更新
 });
 
 /* =========================
-   タイムライン
+   タイムライン表示
 ========================= */
 function loadTimeline(sortType) {
   if (unsubscribe) unsubscribe();
@@ -131,6 +115,10 @@ function loadTimeline(sortType) {
         const img = document.createElement("img");
         img.src = p.image;
         img.className = "post-image";
+
+        // 30%の確率でSVGマスクを適用
+        if (Math.random() < 0.9) img.classList.add("weird-shape");
+
         card.appendChild(img);
       }
 
