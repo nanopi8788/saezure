@@ -22,70 +22,83 @@ imageBtn.addEventListener("click", () => imageInput.click());
 
 let unsubscribe = null;
 
-// =========================
-// 1000x400 トリミング + SVG切り抜き
-// =========================
-const weirdPathD = `
-M1000.460571,401
-C666.947449,401 333.973724,401 1.019791,401
-C1.019791,267.632782 1.019791,134.316391 1.019791,1.005754
-C334.359711,1.005754 667.679871,1.005754 1001,1.008631
-C1001,134.341003 1001,267.670502 1000.460571,401
-z`;
-
-function cropAndMask(imageFile, pathD) {
+/* =========================
+   2.5:1トリミング＋SVGマスク（確率付き）
+========================= */
+function cropToWide(imageFile) {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = () => {
       const img = new Image();
       img.src = reader.result;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 1000;
-        canvas.height = 400;
-        const ctx = canvas.getContext("2d");
 
-        // トリミング計算
-        const targetRatio = 2.5; // 1000 / 400
+      img.onload = () => {
+        const targetRatio = 2.5;
         const imgRatio = img.width / img.height;
+
         let sx, sy, sw, sh;
-        if (imgRatio > targetRatio) {
+
+        if (imgRatio > targetRatio) { // 横長
           sh = img.height;
           sw = sh * targetRatio;
           sx = (img.width - sw) / 2;
           sy = 0;
-        } else {
+        } else { // 縦長
           sw = img.width;
           sh = sw / targetRatio;
           sx = 0;
           sy = (img.height - sh) / 2;
         }
 
-        // SVGパスをPath2Dに変換してクリップ
-        const path = new Path2D(pathD);
-        ctx.save();
-        ctx.clip(path);
+        const canvas = document.createElement("canvas");
+        canvas.width = 1000;
+        canvas.height = 400;
+        const ctx = canvas.getContext("2d");
 
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
+        // 90%の確率でマスクをかける
+        if (Math.random() < 0.9) {
+          const maskImg = new Image();
+          maskImg.crossOrigin = "anonymous";
+          maskImg.src = "https://nanopi8788.github.io/saezure/weird.svg";
+          maskImg.onload = () => {
+            // Canvasにマスク
+            const maskCanvas = document.createElement("canvas");
+            maskCanvas.width = canvas.width;
+            maskCanvas.height = canvas.height;
+            const maskCtx = maskCanvas.getContext("2d");
+            maskCtx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
 
-        resolve(canvas.toDataURL("image/png"));
+            // マスク適用
+            ctx.save();
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+            ctx.globalCompositeOperation = "destination-in";
+            ctx.drawImage(maskCanvas, 0, 0);
+            ctx.restore();
+
+            resolve(canvas.toDataURL("image/png"));
+          };
+        } else {
+          // マスクなし
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL("image/png"));
+        }
       };
     };
+
     reader.readAsDataURL(imageFile);
   });
 }
 
-// =========================
-// 投稿処理
-// =========================
+/* =========================
+   投稿処理
+========================= */
 btn.addEventListener("click", async () => {
   const text = input.value.trim();
   const file = imageInput.files[0];
   if (!text && !file) return;
 
   let imageUrl = null;
-  if (file) imageUrl = await cropAndMask(file, weirdPathD);
+  if (file) imageUrl = await cropToWide(file);
 
   await db.collection("posts").add({
     text,
@@ -98,9 +111,9 @@ btn.addEventListener("click", async () => {
   imageInput.value = "";
 });
 
-// =========================
-// タイムライン表示
-// =========================
+/* =========================
+   タイムライン
+========================= */
 function loadTimeline(sortType) {
   if (unsubscribe) unsubscribe();
 
@@ -148,12 +161,12 @@ function loadTimeline(sortType) {
   });
 }
 
-// =========================
-// ソートボタン
-// =========================
+/* =========================
+   ソートボタン
+========================= */
 document.querySelectorAll(".sort-buttons button").forEach(b => {
   b.addEventListener("click", () => loadTimeline(b.dataset.sort));
 });
 
-// 初期表示
+/* 初期表示 */
 loadTimeline("new");
