@@ -62,7 +62,8 @@ main {
 .post-btn-wrapper {
   display: flex;
   justify-content: flex-end; /* 右寄せ */
-  margin-top: 8px;           /* textarea との間隔 */
+  margin-top: 8px;           /* textarea との間隔 */ 
+  gap: 8px;
 }
 
 .image-button {
