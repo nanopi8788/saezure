@@ -16,6 +16,12 @@ const btn = document.getElementById("post-btn");
 const input = document.getElementById("post-input");
 const imageInput = document.getElementById("image-input");
 const timeline = document.getElementById("timeline");
+const imageBtn = document.getElementById("image-select-btn");
+
+imageBtn.addEventListener("click", () => {
+  imageInput.click(); // ファイル選択ダイアログを開く
+});
+
 
 let unsubscribe = null;
 
