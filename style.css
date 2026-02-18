@@ -61,9 +61,9 @@ main {
 /* ボタンを textarea の外、右下に配置 */
 .post-btn-wrapper {
   display: flex;
-  justify-content: flex-end; /* 右寄せ */
+  justify-content: flex-end; 
   align-items: center;
-  margin-top: 8px;           /* textarea との間隔 */ 
+  margin-top: 8px;  
   gap: 8px;
 }
 
@@ -91,7 +91,6 @@ main {
   max-width: 480px;
 }
 
-/* 下線（メイン） */
 .line-below-btn {
   position: absolute;
   bottom: 0;
@@ -102,7 +101,6 @@ main {
   background-color: #C8D4DB;
 }
 
-/* 下線中央に短い線 */
 .line-below-btn::before {
   content: "";
   position: absolute;
@@ -114,7 +112,6 @@ main {
   background-color: #FF1D8D;
 }
 
-/* タイムライン文字 */
 .timeline-text {
   position: absolute;
   bottom: 100%;
@@ -125,7 +122,6 @@ main {
   font-weight: bold;
 }
 
-/* 投稿カード */
 .post-card {
   background: white;
   border-radius: 12px;
@@ -135,22 +131,11 @@ main {
 }
 
 .post-image {
-  width: 100%;      /* カード幅いっぱいにする */
-  max-width: 100%;  /* 最大幅はカード内で収まる */
-  height: 400px;     /* 高さは自動で比率を保つ */
+  width: 100%;     
+  max-width: 100%; 
+  height: 400px;    
   object-fit: cover;
-  border-radius: 12px; /* カードに合わせる */
+  border-radius: 12px;
 }
 
-.weird-shape {
-  -webkit-mask-image: url("https://nanopi8788.github.io/saezure/weird.svg");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-  -webkit-mask-position: center;
-
-  mask-image: url("https://nanopi8788.github.io/saezure/weird.svg");
-  mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  mask-position: center;
-}
-
+/* weird-shape のCSSは削除、Canvas側で切り抜くため不要 */
