@@ -31,32 +31,21 @@ function cropToWide(imageFile) {
       img.src = reader.result;
 
       img.onload = () => {
-        const targetRatio = 2.5;
-        const imgRatio = img.width / img.height;
-
-        let sx, sy, sw, sh;
-
-        if (imgRatio > targetRatio) {
-          sh = img.height;
-          sw = sh * targetRatio;
-          sx = (img.width - sw) / 2;
-          sy = 0;
-        } else {
-          sw = img.width;
-          sh = sw / targetRatio;
-          sx = 0;
-          sy = (img.height - sh) / 2;
-        }
-
         const canvas = document.createElement("canvas");
-        canvas.width = 1000;
-        canvas.height = 400;
         const ctx = canvas.getContext("2d");
 
-        if (Math.random() < 0.9) { // マスクあり
+        // 90%の確率でマスクをかける
+        const applyMask = Math.random() < 0.9;
+
+        if (applyMask) {
+          // マスクあり → SVGに合わせる（元画像比率維持）
+          canvas.width = img.width;
+          canvas.height = img.height;
+
           const maskImg = new Image();
           maskImg.crossOrigin = "anonymous";
           maskImg.src = "https://nanopi8788.github.io/saezure/weird.svg";
+
           maskImg.onload = () => {
             const maskCanvas = document.createElement("canvas");
             maskCanvas.width = canvas.width;
@@ -65,14 +54,35 @@ function cropToWide(imageFile) {
             maskCtx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
 
             ctx.save();
-            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             ctx.globalCompositeOperation = "destination-in";
             ctx.drawImage(maskCanvas, 0, 0);
             ctx.restore();
 
             resolve(canvas.toDataURL("image/png"));
           };
-        } else { // 通常投稿
+        } else {
+          // マスクなし → 元の2.5:1トリミング
+          const targetRatio = 2.5;
+          const imgRatio = img.width / img.height;
+
+          let sx, sy, sw, sh;
+
+          if (imgRatio > targetRatio) {
+            sh = img.height;
+            sw = sh * targetRatio;
+            sx = (img.width - sw) / 2;
+            sy = 0;
+          } else {
+            sw = img.width;
+            sh = sw / targetRatio;
+            sx = 0;
+            sy = (img.height - sh) / 2;
+          }
+
+          canvas.width = 1000;
+          canvas.height = 400;
+
           ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
           resolve(canvas.toDataURL("image/png"));
         }
@@ -81,7 +91,6 @@ function cropToWide(imageFile) {
     reader.readAsDataURL(imageFile);
   });
 }
-
 // 投稿処理
 btn.addEventListener("click", async () => {
   const text = input.value.trim();
