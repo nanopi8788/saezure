@@ -17,6 +17,11 @@ const input = document.getElementById("post-input");
 const imageInput = document.getElementById("image-input");
 const timeline = document.getElementById("timeline");
 const imageBtn = document.getElementById("image-select-btn");
+const checkMark = document.getElementById("image-selected-check");
+
+imageInput.addEventListener("change", () => {
+  checkMark.style.display = imageInput.files.length > 0 ? "inline" : "none";
+});
 
 imageBtn.addEventListener("click", () => imageInput.click());
 
@@ -113,8 +118,10 @@ btn.addEventListener("click", async () => {
     likes: 0
   });
 
+  // 投稿後にフォームをリセット
   input.value = "";
   imageInput.value = "";
+  checkMark.style.display = "none";  // ←ここでチェックマークを消す
 });
 
 // タイムライン
