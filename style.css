@@ -137,7 +137,7 @@ main {
 .post-image {
   width: 100%;      /* カード幅いっぱいにする */
   max-width: 100%;  /* 最大幅はカード内で収まる */
-  height: 400;     /* 高さは自動で比率を保つ */
+  height: 400px;     /* 高さは自動で比率を保つ */
   object-fit: cover;
   border-radius: 12px; /* カードに合わせる */
 }
