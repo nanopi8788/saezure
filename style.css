@@ -2,13 +2,14 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background: #f5f8fa;
+  overflow-x: hidden; /* 横スクロール禁止 */
 }
 
 header {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   background: #FEACD8;
   color: white;
   text-align: center;
@@ -126,6 +127,7 @@ main {
   margin-top: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   width: 100%;       /* 横いっぱい */
+  box-sizing: border-box; /* padding込みで幅を計算 */
 }
 
 .post-image {
