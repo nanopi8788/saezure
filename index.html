@@ -10,11 +10,11 @@
 
 <header class="header">
   <span class="header-title">さえずれ</span>
-  <img src="https://github.com/nanopi8788/saezure/blob/main/%E3%81%8B%E3%82%8F%E3%81%84%E3%81%84%E3%81%AA%E3%81%AE%E3%81%B4.png?raw=true" alt="" class="header-icon">
+  <img src="https://raw.githubusercontent.com/nanopi8788/saezure/main/%E3%81%8B%E3%82%8F%E3%81%84%E3%81%84%E3%81%AA%E3%81%AE%E3%81%B4.png" class="header-icon">
 </header>
 
-  <input type="file" id="image-input" accept="image/*">
-
+<!-- 画像選択 -->
+<input type="file" id="image-input" accept="image/*">
 
 <main>
 
@@ -22,7 +22,7 @@
     <textarea id="post-input" maxlength="140" placeholder="さて、さえずるか"></textarea>
     <div class="post-btn-wrapper">
       <button id="post-btn" class="image-button">
-        <img src="https://github.com/nanopi8788/saezure/blob/main/%E3%81%95%E3%81%88%E3%81%9A%E3%82%8B.png?raw=true" alt="さえずる">
+        <img src="https://raw.githubusercontent.com/nanopi8788/saezure/main/%E3%81%95%E3%81%88%E3%81%9A%E3%82%8B.png" alt="さえずる">
       </button>
     </div>
   </div>
@@ -33,14 +33,14 @@
   </div>
 
   <div class="sort-buttons">
-  <button data-sort="new">最新</button>
-  <button data-sort="like">いいね順</button>
+    <button data-sort="new">最新</button>
+    <button data-sort="like">いいね順</button>
   </div>
-  
+
   <div id="timeline"></div>
+
 </main>
 
-<!-- Firebase compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
