@@ -38,19 +38,22 @@ function cropToWide(imageFile) {
 
         let sx, sy, sw, sh;
 
-        if (imgRatio > targetRatio) { // 横長
+        if (imgRatio > targetRatio) {
+          // 横長
           sh = img.height;
           sw = sh * targetRatio;
           sx = (img.width - sw) / 2;
           sy = 0;
-        } else { // 縦長
+        } else {
+          // 縦長
           sw = img.width;
           sh = sw / targetRatio;
           sx = 0;
           sy = (img.height - sh) / 2;
         }
 
-        const canvas = document.createElement("canvas");
+        // デフォルトの細長い canvas
+        let canvas = document.createElement("canvas");
         canvas.width = 1000;
         canvas.height = 400;
         const ctx = canvas.getContext("2d");
@@ -61,24 +64,23 @@ function cropToWide(imageFile) {
           maskImg.crossOrigin = "anonymous";
           maskImg.src = "https://nanopi8788.github.io/saezure/weird.svg";
           maskImg.onload = () => {
-            // Canvasにマスク
-            const maskCanvas = document.createElement("canvas");
-            maskCanvas.width = canvas.width;
-            maskCanvas.height = canvas.height;
-            const maskCtx = maskCanvas.getContext("2d");
-            maskCtx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+            // マスクに合わせた canvas に切り替える
+            canvas = document.createElement("canvas");
+            canvas.width = maskImg.width;
+            canvas.height = maskImg.height;
+            const ctx = canvas.getContext("2d");
+
+            // 画像を canvas に描画
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
 
             // マスク適用
-            ctx.save();
-            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
             ctx.globalCompositeOperation = "destination-in";
-            ctx.drawImage(maskCanvas, 0, 0);
-            ctx.restore();
+            ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
 
             resolve(canvas.toDataURL("image/png"));
           };
         } else {
-          // マスクなし
+          // マスクなし（通常投稿）
           ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
           resolve(canvas.toDataURL("image/png"));
         }
@@ -88,6 +90,7 @@ function cropToWide(imageFile) {
     reader.readAsDataURL(imageFile);
   });
 }
+
 
 /* =========================
    投稿処理
