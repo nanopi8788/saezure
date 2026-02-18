@@ -125,12 +125,12 @@ main {
   padding: 12px;
   margin-top: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  width: fit-content; /* 画像に合わせる */
+  width: 100%;       /* 横いっぱい */
 }
 
 .post-image {
   width: 100%;
-  max-width: 480px;
   height: auto;
+  object-fit: cover;
   border-radius: 12px;
 }
