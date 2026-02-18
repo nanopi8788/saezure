@@ -56,7 +56,7 @@ function cropToWide(imageFile) {
         const ctx = canvas.getContext("2d");
 
         // 30%の確率でSVGマスクを適用
-        if (Math.random() < 0.3) {
+        if (Math.random() < 0.9) {
           ctx.save();
           const path = new Path2D();
           // SVGパスをPath2Dに変換
