@@ -1,12 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 28.6.0, SVG Export Plug-In . SVG Version: 9.03 Build 54939)  -->
-<svg version="1.1" id="レイヤー_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-	 y="0px" viewBox="0 0 566.93 566.93" style="enable-background:new 0 0 566.93 566.93;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#FFFFFF;}
-</style>
-<path class="st0" d="M563.12,349.25c-11.25,34.31-55.69,46.13-55.69,46.13c-93.38,16.31-119.82-28.13-119.82-28.13H172.72
-	c-21.94,41.07-73.69,20.81-73.69,20.81C23.65,358.25,1,286.93,1,286.93s22.65-71.32,98.03-101.13c0,0,51.75-20.26,73.69,20.81
-	h214.89c0,0,26.44-44.44,119.82-28.13c0,0,44.44,11.82,55.69,46.13c0,0,13.5,43.64-32.07,62.32
-	C576.62,305.61,563.12,349.25,563.12,349.25z"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_レイヤー_2" data-name="レイヤー_2" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 400">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #fff;
+      }
+
+      .st1 {
+        fill: none;
+      }
+
+      .st2 {
+        clip-path: url(#clippath-1);
+      }
+
+      .st3 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="st1" x="-156.53" y="-68.74" width="1313.06" height="525.23"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="st1" x="-156.53" y="-68.74" width="1313.06" height="525.23"/>
+    </clipPath>
+  </defs>
+  <g class="st3">
+    <g class="st2">
+      <path class="st0" d="M1147.71,338.18c-26.06,79.47-128.98,106.84-128.98,106.84-216.28,37.78-277.51-65.15-277.51-65.15H243.51c-50.82,95.12-170.67,48.2-170.67,48.2-174.59-69.04-227.05-234.23-227.05-234.23,0,0,52.46-165.18,227.05-234.23,0,0,119.86-46.92,170.67,48.2h497.71s61.24-102.93,277.51-65.15c0,0,102.93,27.38,128.98,106.84,0,0,31.27,101.07-74.28,144.34,105.55,43.27,74.28,144.34,74.28,144.34"/>
+    </g>
+  </g>
 </svg>
