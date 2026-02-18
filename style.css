@@ -143,12 +143,13 @@ main {
 }
 
 .weird-shape {
-  -webkit-mask-image: url("weird.svg");
+  -webkit-mask-image: url("https://nanopi8788.github.io/saezure/weird.svg");
   -webkit-mask-size: cover;
   -webkit-mask-repeat: no-repeat;
-  mask-image: url("weird.svg");
+  mask-image: url("https://nanopi8788.github.io/saezure/weird.svg");
   mask-size: cover;
   mask-repeat: no-repeat;
 }
+
 
 
