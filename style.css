@@ -133,9 +133,9 @@ main {
 .post-image {
   width: 100%;     
   max-width: 100%; 
-  height: auto
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   border-radius: 12px;
 }
 
-/* weird-shape のCSSは削除、Canvas側で切り抜くため不要 */
+/* weird-shape は削除、Canvas側でマスク切り抜き */
