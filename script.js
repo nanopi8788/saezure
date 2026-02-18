@@ -37,17 +37,20 @@ function cropToWide(imageFile) {
       img.src = reader.result;
 
       img.onload = () => {
-        const targetRatio = 1000 / 400;
+        const targetRatio = 2.5; // 1000 / 400 = 2.5
         const imgRatio = img.width / img.height;
 
         let sx, sy, sw, sh;
 
+        // 横長の画像は左右をカット
         if (imgRatio > targetRatio) {
           sh = img.height;
           sw = sh * targetRatio;
           sx = (img.width - sw) / 2;
           sy = 0;
-        } else {
+        }
+        // 縦長の画像は上下をカット
+        else {
           sw = img.width;
           sh = sw / targetRatio;
           sx = 0;
@@ -55,8 +58,8 @@ function cropToWide(imageFile) {
         }
 
         const canvas = document.createElement("canvas");
-        canvas.width = 1000;
-        canvas.height = 400;
+        canvas.width = 1000;   // 固定幅
+        canvas.height = 400;   // 固定高さ
 
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1000, 400);
