@@ -131,7 +131,7 @@ function loadTimeline(sortType) {
         img.src = p.image;
         img.className = "post-image";
 
-        if (Math.random() < 0.30) {
+        if (Math.random() < 0.90) {
           img.classList.add("weird-shape");
         }
 
