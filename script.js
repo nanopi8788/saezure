@@ -18,39 +18,32 @@ const imageInput = document.getElementById("image-input");
 const timeline = document.getElementById("timeline");
 const imageBtn = document.getElementById("image-select-btn");
 
-imageBtn.addEventListener("click", () => {
-  imageInput.click(); // ファイル選択ダイアログを開く
-});
-
+imageBtn.addEventListener("click", () => imageInput.click());
 
 let unsubscribe = null;
 
 /* =========================
-   1000×400トリミング
+   2.5:1トリミング＋SVGマスク
 ========================= */
 function cropToWide(imageFile) {
   return new Promise((resolve) => {
     const reader = new FileReader();
-
     reader.onload = () => {
       const img = new Image();
       img.src = reader.result;
 
       img.onload = () => {
-        const targetRatio = 2.5; // 1000 / 400 = 2.5
+        const targetRatio = 2.5;
         const imgRatio = img.width / img.height;
 
         let sx, sy, sw, sh;
 
-        // 横長の画像は左右をカット
-        if (imgRatio > targetRatio) {
+        if (imgRatio > targetRatio) { // 横長
           sh = img.height;
           sw = sh * targetRatio;
           sx = (img.width - sw) / 2;
           sy = 0;
-        }
-        // 縦長の画像は上下をカット
-        else {
+        } else { // 縦長
           sw = img.width;
           sh = sw / targetRatio;
           sx = 0;
@@ -58,11 +51,27 @@ function cropToWide(imageFile) {
         }
 
         const canvas = document.createElement("canvas");
-        canvas.width = 1000;   // 固定幅
-        canvas.height = 400;   // 固定高さ
-
+        canvas.width = 1000;
+        canvas.height = 400;
         const ctx = canvas.getContext("2d");
+
+        // 30%の確率でSVGマスクを適用
+        if (Math.random() < 0.3) {
+          ctx.save();
+          const path = new Path2D();
+          // SVGパスをPath2Dに変換
+          path.moveTo(1000.46,401);
+          path.bezierCurveTo(666.94,401,333.97,401,1.01,401);
+          path.bezierCurveTo(1.01,267.63,1.01,134.31,1.01,1.00);
+          path.bezierCurveTo(334.35,1.00,667.67,1.00,1001,1.00);
+          path.bezierCurveTo(1001,134.34,1001,267.67,1000.46,401);
+          path.closePath();
+          ctx.clip(path);
+        }
+
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1000, 400);
+
+        if (Math.random() < 0.3) ctx.restore();
 
         resolve(canvas.toDataURL("image/jpeg", 0.9));
       };
@@ -78,16 +87,13 @@ function cropToWide(imageFile) {
 btn.addEventListener("click", async () => {
   const text = input.value.trim();
   const file = imageInput.files[0];
-
   if (!text && !file) return;
 
   let imageUrl = null;
-  if (file) {
-    imageUrl = await cropToWide(file);
-  }
+  if (file) imageUrl = await cropToWide(file);
 
   await db.collection("posts").add({
-    text: text,
+    text,
     image: imageUrl,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     likes: 0
@@ -104,19 +110,14 @@ function loadTimeline(sortType) {
   if (unsubscribe) unsubscribe();
 
   let query = db.collection("posts");
-
-  if (sortType === "like") {
-    query = query.orderBy("likes", "desc");
-  } else {
-    query = query.orderBy("createdAt", "desc");
-  }
+  if (sortType === "like") query = query.orderBy("likes", "desc");
+  else query = query.orderBy("createdAt", "desc");
 
   unsubscribe = query.onSnapshot(snapshot => {
     timeline.innerHTML = "";
 
     snapshot.forEach(doc => {
       const p = doc.data();
-
       const card = document.createElement("div");
       card.className = "post-card";
 
@@ -130,21 +131,12 @@ function loadTimeline(sortType) {
         const img = document.createElement("img");
         img.src = p.image;
         img.className = "post-image";
-
-        if (Math.random() < 0.90) {
-          img.classList.add("weird-shape");
-        }
-
         card.appendChild(img);
       }
 
       // 時刻
       const time = document.createElement("small");
-      if (p.createdAt && p.createdAt.toDate) {
-        time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
-      } else {
-        time.textContent = "";
-      }
+      if (p.createdAt && p.createdAt.toDate) time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
       card.appendChild(time);
 
       // いいね
@@ -152,9 +144,7 @@ function loadTimeline(sortType) {
       likeBtn.className = "like-btn";
       likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
       likeBtn.onclick = () => {
-        db.collection("posts").doc(doc.id).update({
-          likes: (p.likes || 0) + 1
-        });
+        db.collection("posts").doc(doc.id).update({ likes: (p.likes || 0) + 1 });
       };
       card.appendChild(likeBtn);
 
@@ -167,9 +157,7 @@ function loadTimeline(sortType) {
    ソートボタン
 ========================= */
 document.querySelectorAll(".sort-buttons button").forEach(b => {
-  b.addEventListener("click", () => {
-    loadTimeline(b.dataset.sort);
-  });
+  b.addEventListener("click", () => loadTimeline(b.dataset.sort));
 });
 
 /* 初期表示 */
