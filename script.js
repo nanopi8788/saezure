@@ -126,14 +126,13 @@ btn.addEventListener("click", async () => {
 
 // タイムライン
 function loadTimeline(sortType) {
-  let query = db.collection("posts");
-  if (sortType === "like") {
-    query = query.orderBy("likes", "desc");
-  } else {
-    query = query.orderBy("createdAt", "desc");
-  }
+  if (unsubscribe) unsubscribe();
 
-  query.get().then(snapshot => {
+  let query = db.collection("posts");
+  if (sortType === "like") query = query.orderBy("likes", "desc");
+  else query = query.orderBy("createdAt", "desc");
+
+  unsubscribe = query.onSnapshot(snapshot => {
     timeline.innerHTML = "";
 
     snapshot.forEach(doc => {
@@ -141,12 +140,10 @@ function loadTimeline(sortType) {
       const card = document.createElement("div");
       card.className = "post-card";
 
-      // テキスト
       const txt = document.createElement("p");
       txt.textContent = p.text || "";
       card.appendChild(txt);
 
-      // 画像
       if (p.image) {
         const img = document.createElement("img");
         img.src = p.image;
@@ -154,26 +151,18 @@ function loadTimeline(sortType) {
         card.appendChild(img);
       }
 
-      // 時刻
       const time = document.createElement("small");
-      if (p.createdAt && p.createdAt.toDate) {
-        time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
-      }
+      if (p.createdAt && p.createdAt.toDate) time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
       card.appendChild(time);
 
-      // いいね（更新は都度必要なので読み取りは増える）
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
       likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
-      likeBtn.onclick = () => {
-        db.collection("posts").doc(doc.id).update({ likes: (p.likes || 0) + 1 });
-      };
+      likeBtn.onclick = () => db.collection("posts").doc(doc.id).update({ likes: (p.likes || 0) + 1 });
       card.appendChild(likeBtn);
 
       timeline.appendChild(card);
     });
-  }).catch(err => {
-    console.error("投稿の取得に失敗:", err);
   });
 }
 
