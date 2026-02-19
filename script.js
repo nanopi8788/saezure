@@ -68,10 +68,9 @@ function cropToWide(imageFile) {
         // ===== 確率制御 =====
         const r = Math.random();
         // 0.00 - 0.05  → WEIRD (5%)
-        // 0.05 - 0.95 → HATO (90%)
         // 0.95 - 1.00 → なし (5%)
 
-        if (r < 0.95) {
+        if (r < 0.35) {
 
           ctx.globalCompositeOperation = "destination-in";
           ctx.beginPath();
