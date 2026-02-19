@@ -49,9 +49,9 @@ function cropToWide(imageFile) {
 
         if (maskSrc) {
           // マスクあり → 元画像比率維持で切り抜く
-          canvas.width = img.width;
-          canvas.height = img.height;
-
+          canvas.width = 1000;
+          canvas.height = 400;
+          
           const maskImg = new Image();
           maskImg.crossOrigin = "anonymous";
           maskImg.src = maskSrc;
