@@ -27,14 +27,14 @@ imageBtn.addEventListener("click", () => imageInput.click());
 
 let unsubscribe = null;
 
-// ===============================
-// 2.5:1中央トリミング＋SVGマスク
-// ===============================
+// ===== 2.5:1トリミング＋SVGマスク（完全版） =====
 function cropToWide(imageFile) {
   return new Promise((resolve) => {
+
     const reader = new FileReader();
 
     reader.onload = () => {
+
       const img = new Image();
       img.src = reader.result;
 
@@ -43,12 +43,15 @@ function cropToWide(imageFile) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
+        canvas.width = 1000;
+        canvas.height = 400;
+
+        // --- まず必ず中央トリミング計算 ---
         const targetRatio = 2.5;
         const imgRatio = img.width / img.height;
 
         let sx, sy, sw, sh;
 
-        // 常に中央トリミング
         if (imgRatio > targetRatio) {
           sh = img.height;
           sw = sh * targetRatio;
@@ -61,13 +64,7 @@ function cropToWide(imageFile) {
           sy = (img.height - sh) / 2;
         }
 
-        canvas.width = 1000;
-        canvas.height = 400;
-
-        // 先にトリミング描画
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-
-        // 乱数でマスク決定
+        // --- 乱数でマスク決定 ---
         const r = Math.random();
         let maskSrc = null;
 
@@ -79,29 +76,30 @@ function cropToWide(imageFile) {
         // 残り5%はマスクなし
 
         if (!maskSrc) {
+          // ===== マスクなし =====
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
           resolve(canvas.toDataURL("image/png"));
           return;
         }
 
+        // ===== マスクあり =====
         const maskImg = new Image();
         maskImg.crossOrigin = "anonymous";
         maskImg.src = maskSrc;
 
         maskImg.onload = () => {
 
-          const maskCanvas = document.createElement("canvas");
-          maskCanvas.width = canvas.width;
-          maskCanvas.height = canvas.height;
-          const maskCtx = maskCanvas.getContext("2d");
+          // ① 先にトリミング画像を描画
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
 
-          maskCtx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-
+          // ② マスク適用
           ctx.globalCompositeOperation = "destination-in";
-          ctx.drawImage(maskCanvas, 0, 0);
+          ctx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
           ctx.globalCompositeOperation = "source-over";
 
           resolve(canvas.toDataURL("image/png"));
         };
+
       };
     };
 
@@ -109,8 +107,9 @@ function cropToWide(imageFile) {
   });
 }
 
-// 投稿処理
+// ===== 投稿処理 =====
 btn.addEventListener("click", async () => {
+
   const text = input.value.trim();
   const file = imageInput.files[0];
   if (!text && !file) return;
@@ -130,23 +129,26 @@ btn.addEventListener("click", async () => {
   checkMark.style.display = "none";
 });
 
-// タイムライン
+// ===== タイムライン =====
 function loadTimeline(sortType) {
+
   if (unsubscribe) unsubscribe();
 
   let query = db.collection("posts");
 
-  if (sortType === "like") {
+  if (sortType === "like")
     query = query.orderBy("likes", "desc");
-  } else {
+  else
     query = query.orderBy("createdAt", "desc");
-  }
 
   unsubscribe = query.onSnapshot(snapshot => {
+
     timeline.innerHTML = "";
 
     snapshot.forEach(doc => {
+
       const p = doc.data();
+
       const card = document.createElement("div");
       card.className = "post-card";
 
@@ -162,22 +164,23 @@ function loadTimeline(sortType) {
       }
 
       const time = document.createElement("small");
-      if (p.createdAt && p.createdAt.toDate) {
+      if (p.createdAt?.toDate)
         time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
-      }
       card.appendChild(time);
 
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
       likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
-      likeBtn.onclick = () => {
-        db.collection("posts").doc(doc.id)
+      likeBtn.onclick = () =>
+        db.collection("posts")
+          .doc(doc.id)
           .update({ likes: (p.likes || 0) + 1 });
-      };
+
       card.appendChild(likeBtn);
 
       timeline.appendChild(card);
     });
+
   });
 }
 
