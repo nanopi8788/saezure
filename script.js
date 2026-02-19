@@ -42,15 +42,13 @@ function cropToWide(imageFile) {
         // 乱数でマスク種類を決定
         const r = Math.random();
         let maskSrc = null;
+        
         if (r < 0.05) {
           maskSrc = "https://nanopi8788.github.io/saezure/weird.svg"; // 5%
         } else if (r < 0.95) {
           maskSrc = "https://nanopi8788.github.io/saezure/hato.svg"; // 90%
+        }
           // 残り5%はマスクなし
-
-
-        
-        // else 0.65 → マスクなし
 
         if (maskSrc) {
           // マスクあり → 元画像比率維持で切り抜く
