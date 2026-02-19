@@ -27,80 +27,84 @@ imageBtn.addEventListener("click", () => imageInput.click());
 
 let unsubscribe = null;
 
-// 2.5:1トリミング＋SVGマスク
+// ===============================
+// 2.5:1中央トリミング＋SVGマスク
+// ===============================
 function cropToWide(imageFile) {
   return new Promise((resolve) => {
     const reader = new FileReader();
+
     reader.onload = () => {
       const img = new Image();
       img.src = reader.result;
 
       img.onload = () => {
+
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
-        // 乱数でマスク種類を決定
+        const targetRatio = 2.5;
+        const imgRatio = img.width / img.height;
+
+        let sx, sy, sw, sh;
+
+        // 常に中央トリミング
+        if (imgRatio > targetRatio) {
+          sh = img.height;
+          sw = sh * targetRatio;
+          sx = (img.width - sw) / 2;
+          sy = 0;
+        } else {
+          sw = img.width;
+          sh = sw / targetRatio;
+          sx = 0;
+          sy = (img.height - sh) / 2;
+        }
+
+        canvas.width = 1000;
+        canvas.height = 400;
+
+        // 先にトリミング描画
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+
+        // 乱数でマスク決定
         const r = Math.random();
         let maskSrc = null;
-        
+
         if (r < 0.05) {
           maskSrc = "https://nanopi8788.github.io/saezure/weird.svg"; // 5%
         } else if (r < 0.95) {
           maskSrc = "https://nanopi8788.github.io/saezure/hato.svg"; // 90%
         }
-          // 残り5%はマスクなし
+        // 残り5%はマスクなし
 
-        if (maskSrc) {
-          // マスクあり → 元画像比率維持で切り抜く
-          canvas.width = 1000;
-          canvas.height = 400;
-          
-          const maskImg = new Image();
-          maskImg.crossOrigin = "anonymous";
-          maskImg.src = maskSrc;
-
-          maskImg.onload = () => {
-            const maskCanvas = document.createElement("canvas");
-            maskCanvas.width = canvas.width;
-            maskCanvas.height = canvas.height;
-            const maskCtx = maskCanvas.getContext("2d");
-            maskCtx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
-
-            ctx.save();
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            ctx.globalCompositeOperation = "destination-in";
-            ctx.drawImage(maskCanvas, 0, 0);
-            ctx.restore();
-
-            resolve(canvas.toDataURL("image/png"));
-          };
-        } else {
-          // マスクなし → 2.5:1横長トリミング
-          const targetRatio = 2.5;
-          const imgRatio = img.width / img.height;
-
-          let sx, sy, sw, sh;
-
-          if (imgRatio > targetRatio) {
-            sh = img.height;
-            sw = sh * targetRatio;
-            sx = (img.width - sw) / 2;
-            sy = 0;
-          } else {
-            sw = img.width;
-            sh = sw / targetRatio;
-            sx = 0;
-            sy = (img.height - sh) / 2;
-          }
-
-          canvas.width = 1000;
-          canvas.height = 400;
-
-          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+        if (!maskSrc) {
           resolve(canvas.toDataURL("image/png"));
+          return;
         }
+
+        const maskImg = new Image();
+        maskImg.crossOrigin = "anonymous";
+        maskImg.src = maskSrc;
+
+        maskImg.onload = () => {
+
+          const maskCanvas = document.createElement("canvas");
+          maskCanvas.width = canvas.width;
+          maskCanvas.height = canvas.height;
+          const maskCtx = maskCanvas.getContext("2d");
+
+          maskCtx.drawImage(maskImg, 0, 0, canvas.width, canvas.height);
+
+          ctx.globalCompositeOperation = "destination-in";
+          ctx.drawImage(maskCanvas, 0, 0);
+          ctx.globalCompositeOperation = "source-over";
+
+          resolve(canvas.toDataURL("image/png"));
+        };
       };
     };
+
     reader.readAsDataURL(imageFile);
   });
 }
@@ -121,10 +125,9 @@ btn.addEventListener("click", async () => {
     likes: 0
   });
 
-  // 投稿後にフォームをリセット
   input.value = "";
   imageInput.value = "";
-  checkMark.style.display = "none";  // ←ここでチェックマークを消す
+  checkMark.style.display = "none";
 });
 
 // タイムライン
@@ -132,8 +135,12 @@ function loadTimeline(sortType) {
   if (unsubscribe) unsubscribe();
 
   let query = db.collection("posts");
-  if (sortType === "like") query = query.orderBy("likes", "desc");
-  else query = query.orderBy("createdAt", "desc");
+
+  if (sortType === "like") {
+    query = query.orderBy("likes", "desc");
+  } else {
+    query = query.orderBy("createdAt", "desc");
+  }
 
   unsubscribe = query.onSnapshot(snapshot => {
     timeline.innerHTML = "";
@@ -155,13 +162,18 @@ function loadTimeline(sortType) {
       }
 
       const time = document.createElement("small");
-      if (p.createdAt && p.createdAt.toDate) time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
+      if (p.createdAt && p.createdAt.toDate) {
+        time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
+      }
       card.appendChild(time);
 
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
       likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
-      likeBtn.onclick = () => db.collection("posts").doc(doc.id).update({ likes: (p.likes || 0) + 1 });
+      likeBtn.onclick = () => {
+        db.collection("posts").doc(doc.id)
+          .update({ likes: (p.likes || 0) + 1 });
+      };
       card.appendChild(likeBtn);
 
       timeline.appendChild(card);
