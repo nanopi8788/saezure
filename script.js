@@ -34,7 +34,6 @@ function cropToWide(imageFile) {
     const reader = new FileReader();
 
     reader.onload = () => {
-
       const img = new Image();
       img.src = reader.result;
 
@@ -46,7 +45,7 @@ function cropToWide(imageFile) {
         canvas.width = 1000;
         canvas.height = 400;
 
-        // ---- 2.5:1中央トリミング ----
+        // ===== 2.5:1 中央トリミング =====
         const targetRatio = 2.5;
         const imgRatio = img.width / img.height;
 
@@ -64,34 +63,46 @@ function cropToWide(imageFile) {
           sy = (img.height - sh) / 2;
         }
 
-        // ---- まず画像描画 ----
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1000, 400);
 
-        // ---- 乱数でマスク決定 ----
+        // ===== 確率制御 =====
         const r = Math.random();
+        // 0.00 - 0.05  → WEIRD (5%)
+        // 0.05 - 0.95 → HATO (90%)
+        // 0.95 - 1.00 → なし (5%)
 
-        if (r < 0.05 || (r >= 0.05 && r < 0.95)) {
+        if (r < 0.95) {
 
           ctx.globalCompositeOperation = "destination-in";
-
           ctx.beginPath();
 
-          // ★ WEIRD or HATO 用パスをここに直接書く
-          // 今はテスト用にあなたが貼ったWEIRDを固定
-
-          ctx.moveTo(849.57,294.05);
-          ctx.lineTo(500,400);
-          ctx.lineTo(150.43,294.05);
-          ctx.bezierCurveTo(-42.42,229.48,8.59,102.84,8.59,102.84);
-          ctx.bezierCurveTo(8.59,102.84,22.39,5.7,258.82,0.87);
-          ctx.bezierCurveTo(258.82,0.87,414.19,-10.15,500,69.67);
-          ctx.bezierCurveTo(585.81,-10.15,741.18,0.87,741.18,0.87);
-          ctx.bezierCurveTo(977.61,5.7,991.41,102.84,991.41,102.84);
-          ctx.bezierCurveTo(1042.42,229.48,849.57,294.05,849.57,294.05);
-          ctx.closePath();
+          if (r < 0.05) {
+            // ===== WEIRD 5% =====
+            ctx.moveTo(849.57,294.05);
+            ctx.lineTo(500,400);
+            ctx.lineTo(150.43,294.05);
+            ctx.bezierCurveTo(-42.42,229.48,8.59,102.84,8.59,102.84);
+            ctx.bezierCurveTo(8.59,102.84,22.39,5.7,258.82,0.87);
+            ctx.bezierCurveTo(258.82,0.87,414.19,-10.15,500,69.67);
+            ctx.bezierCurveTo(585.81,-10.15,741.18,0.87,741.18,0.87);
+            ctx.bezierCurveTo(977.61,5.7,991.41,102.84,991.41,102.84);
+            ctx.bezierCurveTo(1042.42,229.48,849.57,294.05,849.57,294.05);
+            ctx.closePath();
+          } else {
+            // ===== HATO 90% =====
+            ctx.moveTo(849.57,294.05);
+            ctx.lineTo(500,400);
+            ctx.lineTo(150.43,294.05);
+            ctx.bezierCurveTo(-42.42,229.48,8.59,102.84,8.59,102.84);
+            ctx.bezierCurveTo(8.59,102.84,22.39,5.7,258.82,0.87);
+            ctx.bezierCurveTo(258.82,0.87,414.19,-10.15,500,69.67);
+            ctx.bezierCurveTo(577.22,-10.15,732.61,0.87,732.61,0.87);
+            ctx.bezierCurveTo(969.02,5.7,991.41,102.84,991.41,102.84);
+            ctx.bezierCurveTo(1042.42,229.48,849.57,294.05,849.57,294.05);
+            ctx.closePath();
+          }
 
           ctx.fill();
-
           ctx.globalCompositeOperation = "source-over";
         }
 
@@ -102,7 +113,6 @@ function cropToWide(imageFile) {
     reader.readAsDataURL(imageFile);
   });
 }
-
 
 // ===== 投稿処理 =====
 btn.addEventListener("click", async () => {
