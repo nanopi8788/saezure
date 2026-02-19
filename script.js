@@ -1,4 +1,4 @@
-// Firebase設定
+// ================= Firebase =================
 const firebaseConfig = {
   apiKey: "AIzaSyD3I5n7DTJgLG8dmuBwahc_TdwPb8FzcMk",
   authDomain: "saezuri-218c7.firebaseapp.com",
@@ -11,7 +11,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// DOM
+// ================= DOM =================
 const btn = document.getElementById("post-btn");
 const input = document.getElementById("post-input");
 const imageInput = document.getElementById("image-input");
@@ -20,25 +20,61 @@ const imageBtn = document.getElementById("image-select-btn");
 const checkMark = document.getElementById("image-selected-check");
 
 imageInput.addEventListener("change", () => {
-  checkMark.style.display = imageInput.files.length > 0 ? "inline" : "none";
+  checkMark.style.display =
+    imageInput.files.length > 0 ? "inline" : "none";
 });
 
 imageBtn.addEventListener("click", () => imageInput.click());
 
 let unsubscribe = null;
 
-// ===== 2.5:1トリミング＋SVGマスク（完全版） =====
-function cropToWide(imageFile) {
-  return new Promise((resolve) => {
+// ================= SVGパス定義 =================
 
+function drawWeird(ctx) {
+  ctx.moveTo(993.28,309.91);
+  ctx.bezierCurveTo(973.44,370.43,895.05,391.28,895.05,391.28);
+  ctx.bezierCurveTo(730.34,420.05,683.7,341.66,683.7,341.66);
+  ctx.lineTo(304.66,341.66);
+  ctx.bezierCurveTo(265.96,414.1,174.68,378.37,174.68,378.37);
+  ctx.bezierCurveTo(41.72,325.78,1.76,199.98,1.76,199.98);
+  ctx.bezierCurveTo(1.76,199.98,41.71,74.18,174.67,21.6);
+  ctx.bezierCurveTo(174.67,21.6,265.95,-14.14,304.65,58.31);
+  ctx.lineTo(683.69,58.31);
+  ctx.bezierCurveTo(730.33,-20.08,895.04,8.69,895.04,8.69);
+  ctx.bezierCurveTo(973.43,29.54,993.27,90.06,993.27,90.06);
+  ctx.bezierCurveTo(1017.08,167.04,936.7,199.98,936.7,199.98);
+  ctx.bezierCurveTo(1017.08,232.93,993.28,309.91,993.28,309.91);
+  ctx.closePath();
+}
+
+function drawHato(ctx) {
+  ctx.moveTo(849.57,294.05);
+  ctx.lineTo(500,400);
+  ctx.lineTo(150.43,294.05);
+  ctx.bezierCurveTo(-42.42,229.48,8.59,102.84,8.59,102.84);
+  ctx.bezierCurveTo(8.59,102.84,22.39,5.7,258.82,0.87);
+  ctx.bezierCurveTo(258.82,0.87,414.19,-10.15,500,69.67);
+  ctx.bezierCurveTo(577.22,-10.15,732.61,0.87,732.61,0.87);
+  ctx.bezierCurveTo(969.02,5.7,991.41,102.84,991.41,102.84);
+  ctx.bezierCurveTo(1042.42,229.48,849.57,294.05,849.57,294.05);
+  ctx.closePath();
+}
+
+// ================= 画像処理 =================
+
+function cropToWide(file) {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
+    reader.onerror = reject;
 
     reader.onload = () => {
       const img = new Image();
       img.src = reader.result;
 
-      img.onload = () => {
+      img.onerror = reject;
 
+      img.onload = () => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
@@ -65,57 +101,35 @@ function cropToWide(imageFile) {
 
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1000, 400);
 
-        // ===== 確率制御 =====
+        // ===== マスク処理 =====
         const r = Math.random();
-        // 0.00 - 0.05  → WEIRD (5%)
-        // 0.95 - 1.00 → なし (5%)
 
         if (r < 0.35) {
-
+          ctx.save();
           ctx.globalCompositeOperation = "destination-in";
           ctx.beginPath();
 
           if (r < 0.05) {
-            // ===== WEIRD 5% =====
-            ctx.moveTo(849.57,294.05);
-            ctx.lineTo(500,400);
-            ctx.lineTo(150.43,294.05);
-            ctx.bezierCurveTo(-42.42,229.48,8.59,102.84,8.59,102.84);
-            ctx.bezierCurveTo(8.59,102.84,22.39,5.7,258.82,0.87);
-            ctx.bezierCurveTo(258.82,0.87,414.19,-10.15,500,69.67);
-            ctx.bezierCurveTo(585.81,-10.15,741.18,0.87,741.18,0.87);
-            ctx.bezierCurveTo(977.61,5.7,991.41,102.84,991.41,102.84);
-            ctx.bezierCurveTo(1042.42,229.48,849.57,294.05,849.57,294.05);
-            ctx.closePath();
+            drawWeird(ctx);
           } else {
-            // ===== HATO 90% =====
-            ctx.moveTo(849.57,294.05);
-            ctx.lineTo(500,400);
-            ctx.lineTo(150.43,294.05);
-            ctx.bezierCurveTo(-42.42,229.48,8.59,102.84,8.59,102.84);
-            ctx.bezierCurveTo(8.59,102.84,22.39,5.7,258.82,0.87);
-            ctx.bezierCurveTo(258.82,0.87,414.19,-10.15,500,69.67);
-            ctx.bezierCurveTo(577.22,-10.15,732.61,0.87,732.61,0.87);
-            ctx.bezierCurveTo(969.02,5.7,991.41,102.84,991.41,102.84);
-            ctx.bezierCurveTo(1042.42,229.48,849.57,294.05,849.57,294.05);
-            ctx.closePath();
+            drawHato(ctx);
           }
 
           ctx.fill();
-          ctx.globalCompositeOperation = "source-over";
+          ctx.restore();
         }
 
         resolve(canvas.toDataURL("image/png"));
       };
     };
 
-    reader.readAsDataURL(imageFile);
+    reader.readAsDataURL(file);
   });
 }
 
-// ===== 投稿処理 =====
-btn.addEventListener("click", async () => {
+// ================= 投稿 =================
 
+btn.addEventListener("click", async () => {
   const text = input.value.trim();
   const file = imageInput.files[0];
   if (!text && !file) return;
@@ -135,24 +149,22 @@ btn.addEventListener("click", async () => {
   checkMark.style.display = "none";
 });
 
-// ===== タイムライン =====
-function loadTimeline(sortType) {
+// ================= タイムライン =================
 
+function loadTimeline(sortType) {
   if (unsubscribe) unsubscribe();
 
   let query = db.collection("posts");
 
-  if (sortType === "like")
-    query = query.orderBy("likes", "desc");
-  else
-    query = query.orderBy("createdAt", "desc");
+  query =
+    sortType === "like"
+      ? query.orderBy("likes", "desc")
+      : query.orderBy("createdAt", "desc");
 
   unsubscribe = query.onSnapshot(snapshot => {
-
     timeline.innerHTML = "";
 
     snapshot.forEach(doc => {
-
       const p = doc.data();
 
       const card = document.createElement("div");
@@ -171,29 +183,27 @@ function loadTimeline(sortType) {
 
       const time = document.createElement("small");
       if (p.createdAt?.toDate)
-        time.textContent = new Date(p.createdAt.toDate()).toLocaleString();
+        time.textContent =
+          new Date(p.createdAt.toDate()).toLocaleString();
       card.appendChild(time);
 
       const likeBtn = document.createElement("span");
       likeBtn.className = "like-btn";
       likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
+
       likeBtn.onclick = () =>
         db.collection("posts")
           .doc(doc.id)
           .update({ likes: (p.likes || 0) + 1 });
 
       card.appendChild(likeBtn);
-
       timeline.appendChild(card);
     });
-
   });
 }
 
-// ソートボタン
 document.querySelectorAll(".sort-buttons button").forEach(b => {
   b.addEventListener("click", () => loadTimeline(b.dataset.sort));
 });
 
-// 初期表示
 loadTimeline("new");
