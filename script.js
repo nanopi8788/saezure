@@ -26,9 +26,11 @@ imageInput.addEventListener("change", () => {
 
 imageBtn.addEventListener("click", () => imageInput.click());
 
-let unsubscribe = null;
+// ================= 状態 =================
+let lastDoc = null;
+let currentSort = "new";
 
-// ================= SVGパス定義 =================
+// ================= SVGパス =================
 
 function drawWeird(ctx) {
   ctx.moveTo(993.28,309.91);
@@ -64,24 +66,24 @@ function drawHato(ctx) {
 
 function cropToWide(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
 
+    const reader = new FileReader();
     reader.onerror = reject;
 
     reader.onload = () => {
+
       const img = new Image();
       img.src = reader.result;
-
       img.onerror = reject;
 
       img.onload = () => {
+
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
         canvas.width = 1000;
         canvas.height = 400;
 
-        // ===== 2.5:1 中央トリミング =====
         const targetRatio = 2.5;
         const imgRatio = img.width / img.height;
 
@@ -101,10 +103,10 @@ function cropToWide(file) {
 
         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1000, 400);
 
-        // ===== マスク処理 =====
         const r = Math.random();
 
         if (r < 0.35) {
+
           ctx.save();
           ctx.globalCompositeOperation = "destination-in";
           ctx.beginPath();
@@ -130,8 +132,10 @@ function cropToWide(file) {
 // ================= 投稿 =================
 
 btn.addEventListener("click", async () => {
+
   const text = input.value.trim();
   const file = imageInput.files[0];
+
   if (!text && !file) return;
 
   let imageUrl = null;
@@ -147,12 +151,57 @@ btn.addEventListener("click", async () => {
   input.value = "";
   imageInput.value = "";
   checkMark.style.display = "none";
+
+  loadTimeline(currentSort);
 });
+
+// ================= 投稿描画 =================
+
+function renderPost(doc) {
+
+  const p = doc.data();
+
+  const card = document.createElement("div");
+  card.className = "post-card";
+
+  const txt = document.createElement("p");
+  txt.textContent = p.text || "";
+  card.appendChild(txt);
+
+  if (p.image) {
+    const img = document.createElement("img");
+    img.src = p.image;
+    img.className = "post-image";
+    card.appendChild(img);
+  }
+
+  const time = document.createElement("small");
+  if (p.createdAt?.toDate)
+    time.textContent =
+      new Date(p.createdAt.toDate()).toLocaleString();
+  card.appendChild(time);
+
+  const likeBtn = document.createElement("span");
+  likeBtn.className = "like-btn";
+  likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
+
+  likeBtn.onclick = () =>
+    db.collection("posts")
+      .doc(doc.id)
+      .update({ likes: (p.likes || 0) + 1 });
+
+  card.appendChild(likeBtn);
+
+  timeline.appendChild(card);
+}
 
 // ================= タイムライン =================
 
 function loadTimeline(sortType) {
-  if (unsubscribe) unsubscribe();
+
+  currentSort = sortType;
+  timeline.innerHTML = "";
+  lastDoc = null;
 
   let query = db.collection("posts");
 
@@ -161,49 +210,45 @@ function loadTimeline(sortType) {
       ? query.orderBy("likes", "desc")
       : query.orderBy("createdAt", "desc");
 
-  unsubscribe = query.onSnapshot(snapshot => {
-    timeline.innerHTML = "";
+  query.limit(10).get().then(snapshot => {
 
-    snapshot.forEach(doc => {
-      const p = doc.data();
+    if (!snapshot.empty) {
+      lastDoc = snapshot.docs[snapshot.docs.length - 1];
+    }
 
-      const card = document.createElement("div");
-      card.className = "post-card";
-
-      const txt = document.createElement("p");
-      txt.textContent = p.text || "";
-      card.appendChild(txt);
-
-      if (p.image) {
-        const img = document.createElement("img");
-        img.src = p.image;
-        img.className = "post-image";
-        card.appendChild(img);
-      }
-
-      const time = document.createElement("small");
-      if (p.createdAt?.toDate)
-        time.textContent =
-          new Date(p.createdAt.toDate()).toLocaleString();
-      card.appendChild(time);
-
-      const likeBtn = document.createElement("span");
-      likeBtn.className = "like-btn";
-      likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
-
-      likeBtn.onclick = () =>
-        db.collection("posts")
-          .doc(doc.id)
-          .update({ likes: (p.likes || 0) + 1 });
-
-      card.appendChild(likeBtn);
-      timeline.appendChild(card);
-    });
+    snapshot.forEach(renderPost);
   });
 }
+
+// ================= もっと見る =================
+
+function loadMore() {
+
+  if (!lastDoc) return;
+
+  let query = db.collection("posts");
+
+  query =
+    currentSort === "like"
+      ? query.orderBy("likes", "desc")
+      : query.orderBy("createdAt", "desc");
+
+  query.startAfter(lastDoc).limit(10).get().then(snapshot => {
+
+    if (!snapshot.empty) {
+      lastDoc = snapshot.docs[snapshot.docs.length - 1];
+    }
+
+    snapshot.forEach(renderPost);
+  });
+}
+
+// ================= ソート =================
 
 document.querySelectorAll(".sort-buttons button").forEach(b => {
   b.addEventListener("click", () => loadTimeline(b.dataset.sort));
 });
+
+// ================= 初期表示 =================
 
 loadTimeline("new");
