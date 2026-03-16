@@ -9,9 +9,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.firestore();
-const storage = firebase.storage();
 
 // ================= DOM =================
 const btn = document.getElementById("post-btn");
@@ -23,12 +21,45 @@ const timeline = document.getElementById("timeline");
 let lastDoc = null;
 let currentSort = "new";
 
+// ================= SVGパス =================
+
+function drawWeird(ctx) {
+  ctx.moveTo(993.28,309.91);
+  ctx.bezierCurveTo(973.44,370.43,895.05,391.28,895.05,391.28);
+  ctx.bezierCurveTo(730.34,420.05,683.7,341.66,683.7,341.66);
+  ctx.lineTo(304.66,341.66);
+  ctx.bezierCurveTo(265.96,414.1,174.68,378.37,174.68,378.37);
+  ctx.bezierCurveTo(41.72,325.78,1.76,199.98,1.76,199.98);
+  ctx.bezierCurveTo(1.76,199.98,41.71,74.18,174.67,21.6);
+  ctx.bezierCurveTo(174.67,21.6,265.95,-14.14,304.65,58.31);
+  ctx.lineTo(683.69,58.31);
+  ctx.bezierCurveTo(730.33,-20.08,895.04,8.69,895.04,8.69);
+  ctx.bezierCurveTo(973.43,29.54,993.27,90.06,993.27,90.06);
+  ctx.bezierCurveTo(1017.08,167.04,936.7,199.98,936.7,199.98);
+  ctx.bezierCurveTo(1017.08,232.93,993.28,309.91,993.28,309.91);
+  ctx.closePath();
+}
+
+function drawHato(ctx) {
+  ctx.moveTo(849.57,294.05);
+  ctx.lineTo(500,400);
+  ctx.lineTo(150.43,294.05);
+  ctx.bezierCurveTo(-42.42,229.48,8.59,102.84,8.59,102.84);
+  ctx.bezierCurveTo(8.59,102.84,22.39,5.7,258.82,0.87);
+  ctx.bezierCurveTo(258.82,0.87,414.19,-10.15,500,69.67);
+  ctx.bezierCurveTo(577.22,-10.15,732.61,0.87,732.61,0.87);
+  ctx.bezierCurveTo(969.02,5.7,991.41,102.84,991.41,102.84);
+  ctx.bezierCurveTo(1042.42,229.48,849.57,294.05,849.57,294.05);
+  ctx.closePath();
+}
+
 // ================= 画像処理 =================
 
 function cropToWide(file) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
 
     const reader = new FileReader();
+
     reader.onload = () => {
 
       const img = new Image();
@@ -39,8 +70,8 @@ function cropToWide(file) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
-        canvas.width = 1000;
-        canvas.height = 400;
+        canvas.width = 800;
+        canvas.height = 320;
 
         const targetRatio = 2.5;
         const imgRatio = img.width / img.height;
@@ -59,9 +90,27 @@ function cropToWide(file) {
           sy = (img.height - sh) / 2;
         }
 
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1000, 400);
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 800, 320);
 
-        canvas.toBlob(resolve, "image/jpeg", 0.9);
+        const r = Math.random();
+
+        if (r < 0.35) {
+
+          ctx.save();
+          ctx.globalCompositeOperation = "destination-in";
+          ctx.beginPath();
+
+          if (r < 0.05) {
+            drawWeird(ctx);
+          } else {
+            drawHato(ctx);
+          }
+
+          ctx.fill();
+          ctx.restore();
+        }
+
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
       };
     };
 
@@ -81,14 +130,7 @@ btn.addEventListener("click", async () => {
   let imageUrl = null;
 
   if (file) {
-
-    const blob = await cropToWide(file);
-
-    const ref = storage.ref("images/" + Date.now() + ".jpg");
-
-    await ref.put(blob);
-
-    imageUrl = await ref.getDownloadURL();
+    imageUrl = await cropToWide(file);
   }
 
   await db.collection("posts").add({
@@ -118,19 +160,20 @@ function renderPost(doc) {
   card.appendChild(txt);
 
   if (p.image) {
-
     const img = document.createElement("img");
     img.src = p.image;
     img.className = "post-image";
+    img.loading = "lazy"; // ← 遅延読み込み
 
     card.appendChild(img);
   }
 
   const time = document.createElement("small");
 
-  if (p.createdAt?.toDate)
+  if (p.createdAt?.toDate) {
     time.textContent =
       new Date(p.createdAt.toDate()).toLocaleString();
+  }
 
   card.appendChild(time);
 
@@ -138,10 +181,11 @@ function renderPost(doc) {
   likeBtn.className = "like-btn";
   likeBtn.textContent = ` 🩷 ${p.likes || 0}`;
 
-  likeBtn.onclick = () =>
+  likeBtn.onclick = () => {
     db.collection("posts")
       .doc(doc.id)
       .update({ likes: (p.likes || 0) + 1 });
+  };
 
   card.appendChild(likeBtn);
 
@@ -153,7 +197,6 @@ function renderPost(doc) {
 function loadTimeline(sortType) {
 
   currentSort = sortType;
-
   timeline.innerHTML = "";
   lastDoc = null;
 
@@ -166,8 +209,9 @@ function loadTimeline(sortType) {
 
   query.limit(10).get().then(snapshot => {
 
-    if (!snapshot.empty)
+    if (!snapshot.empty) {
       lastDoc = snapshot.docs[snapshot.docs.length - 1];
+    }
 
     snapshot.forEach(renderPost);
   });
@@ -188,8 +232,9 @@ function loadMore() {
 
   query.startAfter(lastDoc).limit(10).get().then(snapshot => {
 
-    if (!snapshot.empty)
+    if (!snapshot.empty) {
       lastDoc = snapshot.docs[snapshot.docs.length - 1];
+    }
 
     snapshot.forEach(renderPost);
   });
@@ -198,7 +243,9 @@ function loadMore() {
 // ================= ソート =================
 
 document.querySelectorAll(".sort-buttons button").forEach(b => {
-  b.addEventListener("click", () => loadTimeline(b.dataset.sort));
+  b.addEventListener("click", () => {
+    loadTimeline(b.dataset.sort);
+  });
 });
 
 // ================= 初期表示 =================
