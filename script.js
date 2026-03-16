@@ -17,6 +17,11 @@ const input = document.getElementById("post-input");
 const imageInput = document.getElementById("image-input");
 const timeline = document.getElementById("timeline");
 
+const loadMoreBtn = document.createElement("button");
+loadMoreBtn.textContent = "もっと見る";
+loadMoreBtn.className = "load-more-btn";
+loadMoreBtn.onclick = loadMore;
+
 // ================= 状態 =================
 let lastDoc = null;
 let currentSort = "new";
@@ -214,6 +219,8 @@ function loadTimeline(sortType) {
     }
 
     snapshot.forEach(renderPost);
+
+     timeline.appendChild(loadMoreBtn);
   });
 }
 
@@ -237,6 +244,8 @@ function loadMore() {
     }
 
     snapshot.forEach(renderPost);
+
+    timeline.appendChild(loadMoreBtn);
   });
 }
 
