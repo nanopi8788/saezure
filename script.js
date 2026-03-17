@@ -210,13 +210,15 @@ function renderPost(doc){
   likeBtn.className="like-btn";
   likeBtn.textContent=` 🩷 ${p.likes||0}`;
 
-  likeBtn.onclick=()=>{
+  likeBtn.onclick = () => {
 
-    db.collection("posts")
-      .doc(doc.id)
-      .update({likes:(p.likes||0)+1});
+  db.collection("posts")
+    .doc(doc.id)
+    .update({
+      likes: firebase.firestore.FieldValue.increment(1)
+    });
 
-  };
+};
 
   card.appendChild(likeBtn);
 
