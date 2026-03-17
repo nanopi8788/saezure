@@ -210,8 +210,13 @@ function renderPost(doc){
   likeBtn.className="like-btn";
   likeBtn.textContent=` 🩷 ${p.likes||0}`;
 
-  likeBtn.onclick = () => {
+likeBtn.onclick = () => {
 
+  // 表示を即更新
+  p.likes = (p.likes || 0) + 1;
+  likeBtn.textContent = ` 🩷 ${p.likes}`;
+
+  // DB更新
   db.collection("posts")
     .doc(doc.id)
     .update({
